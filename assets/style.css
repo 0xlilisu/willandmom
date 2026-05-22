@@ -1,0 +1,191 @@
+/* ==================== 游戏中心统一样式 ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    color: #fff;
+}
+
+.hub-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* 头部 */
+.hub-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding: 40px 0 20px;
+}
+
+.hub-header h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #f093fb, #f5576c, #fda085);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hub-subtitle {
+    font-size: 18px;
+    opacity: 0.6;
+}
+
+/* 游戏卡片网格 */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+/* 游戏卡片 */
+.game-card {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: block;
+    position: relative;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--card-color, #667eea);
+    transition: height 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border-color: var(--card-color, #667eea);
+}
+
+.game-card:hover::before {
+    height: 6px;
+}
+
+.card-emoji {
+    font-size: 60px;
+    text-align: center;
+    padding: 30px 0 10px;
+    transition: transform 0.3s;
+}
+
+.game-card:hover .card-emoji {
+    transform: scale(1.15);
+}
+
+.card-body {
+    padding: 15px 24px 24px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.card-header h3 {
+    font-size: 20px;
+    color: #fff;
+}
+
+.card-badge {
+    background: linear-gradient(135deg, #f5576c, #fda085);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.card-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card-difficulty {
+    font-size: 13px;
+    opacity: 0.5;
+}
+
+.card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+/* 空状态 */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    opacity: 0.4;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+/* 页脚 */
+.hub-footer {
+    text-align: center;
+    padding: 40px 0;
+    opacity: 0.4;
+    font-size: 14px;
+}
+
+/* 响应式 */
+@media (max-width: 680px) {
+    .hub-header h1 {
+        font-size: 30px;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .card-emoji {
+        font-size: 48px;
+        padding: 20px 0 5px;
+    }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 小游戏中心</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="hub-container">
+        <header class="hub-header">
+            <h1>🎮 小游戏中心</h1>
+            <p class="hub-subtitle">边玩边学，快乐成长！</p>
+        </header>
+
+        <div class="games-grid" id="gamesGrid">
+            <!-- 游戏卡片由 JS 动态渲染，方便未来扩展 -->
+        </div>
+
+        <footer class="hub-footer">
+            <p>更多游戏开发中，敬请期待 🚀</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 游戏注册表 ====================
+        // 新游戏只需在这里加一行即可！
+        const games = [
+            {
+                id: 'word-fill',
+                name: '填字母挑战',
+                emoji: '🔤',
+                description: '看中文释义填单词！三种难度模式：普通、地狱、快枪手。QWERTY键盘布局，马里奥/地狱主题音效。',
+                tags: ['单词', '英文', '拼写'],
+                difficulty: '⭐⭐',
+                url: 'games/word-fill/',
+                color: '#667eea',
+                badge: '热门'
+            }
+            // 未来游戏在此添加，例如：
+            // {
+            //     id: 'cat-mouse',
+            //     name: '猫捉老鼠',
+            //     emoji: '🐱',
+            //     description: '多人对战Canvas网页游戏，支持方向键操作+道具系统。',
+            //     tags: ['对战', '多人', 'Canvas'],
+            //     difficulty: '⭐⭐⭐',
+            //     url: 'games/cat-mouse/',
+            //     color: '#e74c3c'
+            // }
+        ];
+
+        // ==================== 渲染游戏卡片 ====================
+        function renderGames() {
+            const grid = document.getElementById('gamesGrid');
+            
+            if (games.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🕹️</div>
+                        <p>游戏即将上线，敬请期待！</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = games.map(game => `
+                <a href="${game.url}" class="game-card" style="--card-color: ${game.color}">
+                    <div class="card-emoji">${game.emoji}</div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3>${game.name}</h3>
+                            ${game.badge ? `<span class="card-badge">${game.badge}</span>` : ''}
+                        </div>
+                        <p class="card-desc">${game.description}</p>
+                        <div class="card-meta">
+                            <span class="card-difficulty">${game.difficulty}</span>
+                            <span class="card-tags">${game.tags.map(t => `<span class="tag">${t}</span>`).join('')}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        renderGames();
+    </script>
+</body>
+</html>
