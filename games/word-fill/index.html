@@ -40,6 +40,19 @@
             --h-shadow: 0 20px 60px rgba(0,0,0,0.3);
             --glow: none;
             --particle: none;
+            /* 响应式尺寸变量 */
+            --box-w: 44px;
+            --box-h: 55px;
+            --box-font: 26px;
+            --box-gap: 6px;
+            --key-w: 42px;
+            --key-h: 42px;
+            --key-font: 16px;
+            --key-gap: 5px;
+            --container-pad: 30px;
+            --h1-size: 28px;
+            --stat-font: 24px;
+            --meaning-font: 18px;
         }
 
         body.hell {
@@ -250,7 +263,7 @@
         .game-container {
             background: var(--container-bg);
             border-radius: 20px;
-            padding: 30px;
+            padding: var(--container-pad);
             box-shadow: var(--h-shadow);
             max-width: 650px;
             width: 100%;
@@ -263,7 +276,7 @@
             text-align: center;
             color: var(--text);
             margin-bottom: 10px;
-            font-size: 28px;
+            font-size: var(--h1-size);
             transition: color 0.5s;
         }
 
@@ -290,7 +303,7 @@
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: var(--stat-font);
             font-weight: bold;
             color: var(--stat-color);
             transition: color 0.5s;
@@ -319,7 +332,7 @@
         }
 
         .word-meaning {
-            font-size: 18px;
+            font-size: var(--meaning-font);
             font-weight: bold;
             margin-bottom: 10px;
             color: var(--text);
@@ -342,18 +355,18 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: var(--box-gap);
         }
 
         .letter-box {
-            width: 44px;
-            height: 55px;
+            width: var(--box-w);
+            height: var(--box-h);
             border: 3px solid var(--border);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: var(--box-font);
             font-weight: bold;
             transition: all 0.3s ease;
             background: var(--container-bg);
@@ -425,23 +438,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: var(--key-gap);
             margin-top: 15px;
         }
 
         .keyboard-row {
             display: flex;
             justify-content: center;
-            gap: 5px;
+            gap: var(--key-gap);
         }
 
         .key {
-            width: 42px;
-            height: 42px;
+            width: var(--key-w);
+            height: var(--key-h);
             border: none;
             border-radius: 8px;
             color: white;
-            font-size: 16px;
+            font-size: var(--key-font);
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
@@ -477,7 +490,7 @@
         /* 键盘分隔线 */
         .key-divider {
             width: 4px;
-            height: 42px;
+            height: var(--key-h);
             border-radius: 2px;
             background: rgba(255,255,255,0.2);
             margin: 0 2px;
@@ -690,6 +703,178 @@
         }
         body.hell .bpm-display {
             display: block;
+        }
+
+        /* ==================== 手机响应式适配 ==================== */
+        @media (max-width: 500px) {
+            :root {
+                --box-w: 34px;
+                --box-h: 44px;
+                --box-font: 20px;
+                --box-gap: 4px;
+                --key-w: 32px;
+                --key-h: 38px;
+                --key-font: 14px;
+                --key-gap: 3px;
+                --container-pad: 15px;
+                --h1-size: 22px;
+                --stat-font: 18px;
+                --meaning-font: 15px;
+            }
+
+            .game-container {
+                border-radius: 14px;
+            }
+
+            .letter-box {
+                border-width: 2px;
+                border-radius: 7px;
+            }
+
+            .stats-bar {
+                padding: 10px 12px;
+                border-radius: 8px;
+                margin-bottom: 14px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 14px;
+            }
+
+            .hint-text {
+                font-size: 11px;
+                margin: 8px 0;
+            }
+
+            .key-legend {
+                gap: 12px;
+                font-size: 10px;
+            }
+
+            .btn {
+                padding: 10px 24px;
+                font-size: 14px;
+                margin: 5px;
+            }
+
+            .btn-sm {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            .word-number {
+                font-size: 11px;
+            }
+
+            .key-divider {
+                width: 3px;
+                margin: 0 1px;
+            }
+
+            .mode-cards {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .mode-card {
+                padding: 18px 12px;
+            }
+
+            .mode-icon {
+                font-size: 36px;
+            }
+
+            .mode-name {
+                font-size: 18px;
+            }
+
+            .mode-desc {
+                font-size: 12px;
+            }
+
+            .final-score {
+                font-size: 36px;
+                margin: 14px 0;
+            }
+
+            .word-list {
+                max-height: 140px;
+                padding: 10px;
+            }
+
+            .word-item {
+                font-size: 12px;
+                padding: 5px 0;
+            }
+
+            .message {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .progress-bar {
+                height: 6px;
+                margin-top: 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            :root {
+                --box-w: 28px;
+                --box-h: 38px;
+                --box-font: 17px;
+                --box-gap: 3px;
+                --key-w: 28px;
+                --key-h: 34px;
+                --key-font: 13px;
+                --key-gap: 2px;
+                --container-pad: 10px;
+                --h1-size: 19px;
+                --stat-font: 16px;
+                --meaning-font: 13px;
+            }
+
+            .letter-box {
+                border-width: 2px;
+                border-radius: 5px;
+            }
+
+            .key {
+                border-radius: 5px;
+            }
+
+            .stats-bar {
+                padding: 8px 10px;
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+
+            .hint-text {
+                font-size: 10px;
+            }
+
+            .btn {
+                padding: 8px 18px;
+                font-size: 12px;
+            }
+
+            .btn-sm {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .final-score {
+                font-size: 30px;
+            }
+
+            .word-list {
+                max-height: 120px;
+            }
         }
     </style>
 </head>
