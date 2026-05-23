@@ -20,7 +20,7 @@
 }
 body.hell{--bg:#0a0a0a;--container-bg:#1a1a2e;--text:#ff6b6b;--sub:#f39c12;--stat-bg:#16213e;--stat-color:#e74c3c;--border:#e74c3c;--missing-border:#ff6b6b;--missing-bg:#2d132c;--missing-color:#ff6b6b;--filled-border:#f39c12;--filled-bg:#2d1b00;--filled-color:#f39c12;--key-left-bg:#c0392b;--key-left-hover:#a93226;--key-right-bg:#e67e22;--key-right-hover:#d35400;--progress-bg:#16213e;--progress-fill:linear-gradient(90deg,#ff6b6b,#ff4444,#ff6b6b);--btn-bg:linear-gradient(135deg,#e74c3c 0%,#c0392b 100%);--btn-shadow:rgba(231,76,60,0.5);--msg-success-bg:#2d1b00;--msg-success-color:#f39c12;--msg-error-bg:#2d132c;--msg-error-color:#ff4444;--h-shadow:0 0 40px rgba(255,68,68,0.3),0 20px 60px rgba(0,0,0,0.6);--glow:0 0 20px rgba(255,68,68,0.4);--particle:block}
 body.mario{--bg:linear-gradient(180deg,#5c94fc 0%,#4a7de0 40%,#b8d4ff 100%);--container-bg:#fffef5;--text:#e52521;--sub:#8b4513;--stat-bg:#fff8e1;--stat-color:#e52521;--border:#e52521;--missing-border:#fbd000;--missing-bg:#fff8e1;--missing-color:#8b4513;--filled-border:#43b047;--filled-bg:#e8f5e9;--filled-color:#43b047;--key-left-bg:#e52521;--key-left-hover:#c41e1a;--key-right-bg:#43b047;--key-right-hover:#388e3c;--progress-bg:#e0e0e0;--progress-fill:linear-gradient(90deg,#fbd000,#e52521);--btn-bg:linear-gradient(135deg,#e52521 0%,#43b047 100%);--btn-shadow:rgba(229,37,33,0.4);--msg-success-bg:#c8e6c9;--msg-success-color:#2e7d32;--msg-error-bg:#ffcdd2;--msg-error-color:#c62828;--h-shadow:0 8px 0 #8b4513,0 20px 60px rgba(0,0,0,0.2);--glow:0 0 15px rgba(251,208,0,0.5);--particle:none}
-body{font-family:'Segoe UI','PingFang SC',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;transition:background .8s ease;position:relative;overflow:hidden}
+body{font-family:'Segoe UI','PingFang SC',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px;transition:background .8s ease;position:relative;overflow-x:hidden;overflow-y:auto}
 .flame-particles{display:var(--particle);position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .flame{position:absolute;bottom:-10px;border-radius:50%;animation:rise linear infinite;opacity:0}
 @keyframes rise{0%{transform:translateY(0)scale(0);opacity:0}10%{opacity:.8}90%{opacity:.2}100%{transform:translateY(-100vh)scale(1.5);opacity:0}}
@@ -161,8 +161,7 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <div class="list-grid" id="listGrid"></div>
 <div class="list-summary" id="listSummary"></div>
 <div style="text-align:center;margin:15px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:10px">点击卡片选择模式开始 →</p>
-<div class="mode-cards"><div class="mode-card normal-card" onclick="selectModeCard('normal',this)"><div class="mode-icon">📖</div><div class="mode-name">普通模式</div><div class="mode-desc">120秒  +10/-5</div></div><div class="mode-card hell-card" onclick="selectModeCard('hell',this)"><div class="mode-icon">🔥</div><div class="mode-name">地狱模式</div><div class="mode-desc">90秒  +20/-15</div></div><div class="mode-card mario-card" onclick="selectModeCard('mario',this)"><div class="mode-icon">🍄</div><div class="mode-name">快枪手</div><div class="mode-desc">60秒  +15/-10</div></div></div></div>
-<div style="text-align:center;margin-top:8px"><span class="skip-link" onclick="goToPlayerSetup()">👤 修改头像和昵称</span></div></div>
+<div class="mode-cards"><div class="mode-card normal-card" onclick="selectModeCard('normal',this)"><div class="mode-icon">📖</div><div class="mode-name">普通模式</div><div class="mode-desc">120秒  +10/-5</div></div><div class="mode-card hell-card" onclick="selectModeCard('hell',this)"><div class="mode-icon">🔥</div><div class="mode-name">地狱模式</div><div class="mode-desc">90秒  +20/-15</div></div><div class="mode-card mario-card" onclick="selectModeCard('mario',this)"><div class="mode-icon">🍄</div><div class="mode-name">快枪手</div><div class="mode-desc">60秒  +15/-10</div></div></div></div></div>
 
 <!-- 玩家设置 -->
 <div id="playerScreen" style="display:none"><h1>👤 你的身份</h1><p class="subtitle">选头像和昵称（可以跳过）</p>
@@ -184,8 +183,17 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <button class="btn btn-sm" onclick="endGame()" style="margin-top:15px;background:#888">结束挑战</button></div>
 
 <!-- 结果+排行榜 -->
-<div id="endScreen" style="display:none"><h1 id="endTitle">🎉 挑战结束！</h1><div class="final-score" id="finalScore">0</div><p id="resultText" style="color:var(--sub);margin-bottom:20px"></p>
-<div class="leaderboard"><div class="lb-title" id="lbTitle">🏆 排行榜</div><div id="lbContent"></div></div>
+<div id="endScreen" style="display:none"><h1 id="endTitle">\ud83c\udf89 Challenge Over!</h1><div class="final-score" id="finalScore">0</div><p id="resultText" style="color:var(--sub);margin-bottom:20px"></p>
+<div id="endPlayerSetup" style="margin:15px 0">
+<p style="text-align:center;font-size:14px;color:var(--text);margin-bottom:10px">\ud83c\udfc6 Join the leaderboard?</p>
+<div style="text-align:center"><div id="endPreviewAvatar" style="display:inline-block;width:48px;height:48px;border:3px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px"></div></div>
+<p style="text-align:center;font-size:12px;color:var(--sub);margin-bottom:6px">Pick avatar</p>
+<div class="avatar-grid" id="endAvatarGrid" style="max-height:200px;grid-template-columns:repeat(10,1fr)"></div>
+<div style="text-align:center;margin:12px 0"><input type="text" class="name-input" id="endPlayerName" placeholder="Enter your name..." maxlength="12"></div>
+<div class="name-hint">Leave blank to skip</div>
+<button class="btn btn-sm" onclick="submitEndPlayer()" style="margin-top:8px">Save & Show Leaderboard</button>
+</div>
+<div class="leaderboard" id="leaderboardSection" style="display:none"><div class="lb-title" id="lbTitle">\ud83c\udfc6 Leaderboard</div><div id="lbContent"></div></div>
 <div class="word-list" id="wordList"></div>
 <button class="btn" onclick="restartGame()">再来一次</button><button class="btn btn-sm" onclick="showVocabScreen()" style="background:#888">重新选择</button></div>
 </div>
@@ -291,7 +299,7 @@ function saveLB(mode, listId, entries) {
   const k = 'wordfill_lb_' + mode + '_' + listId;
   const dedup = new Map();
   entries.forEach(e => { const ex = dedup.get(e.name); if (!ex || e.score > ex.score) dedup.set(e.name, e); });
-  const arr = Array.from(dedup.values()).sort((a, b) => b.score - a.score).slice(0, 10);
+  const arr = Array.from(dedup.values()).sort((a, b) => b.score - a.score).slice(0, 20);
   localStorage.setItem(k, JSON.stringify(arr));
   return arr;
 }
@@ -532,14 +540,38 @@ function endGame() {
   else if (gameMode === 'mario') rt = score >= 120 ? '\u2b50 Super Quickdraw!' : (score >= 80 ? '\ud83c\udf44 Powered Up!' : (score >= 0 ? '\ud83c\udf1f Not bad' : '\ud83d\udc22 Tripped'));
   else rt = score >= 200 ? '\ud83c\udfc6 Word Master!' : (score >= 100 ? '\ud83d\udc4d Nice!' : (score >= 0 ? '\ud83d\udcaa Keep going' : '\ud83d\udcda Study more'));
   document.getElementById('resultText').textContent = rt;
-  var name = playerData.name.trim();
-  var listKey = getListKey();
-  if (name) { addToLB(gameMode, listKey, { name: name, score: score, avatar: playerData.avatar, date: new Date().toISOString().slice(0, 10) }); }
-  renderLeaderboard();
   document.getElementById('wordList').innerHTML = words.map(function (w, i) {
     var r = gameResults.find(function (g) { return g.word === w.word; });
     return '<div class="word-item"><span>' + (i + 1) + '. ' + w.word + ' <small>(' + w.meaning + ')</small></span>' + (r ? '<span class="correct">\u2713</span>' : '<span class="wrong">\u2717</span>') + '</div>';
   }).join('');
+  document.getElementById('endPlayerSetup').style.display = 'block';
+  document.getElementById('leaderboardSection').style.display = 'none';
+  document.getElementById('endPlayerName').value = playerData.name || '';
+  renderEndAvatarGrid();
+  updateEndPreview();
+  if (playerData.name.trim()) { submitEndPlayer(); }
+}
+function renderEndAvatarGrid() {
+  var grid = document.getElementById('endAvatarGrid');
+  grid.innerHTML = '';
+  ALL_AVATARS.forEach(function (av, i) {
+    var cell = document.createElement('div');
+    cell.className = 'avatar-cell' + (i === playerData.avatar ? ' selected' : '');
+    cell.onclick = function () { playerData.avatar = i; renderEndAvatarGrid(); updateEndPreview(); };
+    renderPixelAvatar(cell, av, 28);
+    grid.appendChild(cell);
+  });
+}
+function updateEndPreview() { var av = ALL_AVATARS[playerData.avatar]; renderPixelAvatar(document.getElementById('endPreviewAvatar'), av, 44); }
+document.getElementById('endPlayerName').addEventListener('input', function () { playerData.name = this.value.trim(); });
+function submitEndPlayer() {
+  savePlayer(playerData);
+  var name = playerData.name.trim();
+  var listKey = getListKey();
+  if (name) { addToLB(gameMode, listKey, { name: name, score: score, avatar: playerData.avatar, date: new Date().toISOString().slice(0, 10) }); }
+  document.getElementById('endPlayerSetup').style.display = 'none';
+  document.getElementById('leaderboardSection').style.display = 'block';
+  renderLeaderboard();
 }
 
 function renderLeaderboard() {
