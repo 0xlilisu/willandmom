@@ -74,12 +74,20 @@ h1{text-align:center;color:var(--text);margin-bottom:10px;font-size:var(--h1-siz
 body.hell .bpm-display{display:block}body.mario .bpm-display{display:block;color:#43b047}
 
 /* 新屏幕：词汇选择 + 头像 + 排行榜 */
-.select-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}
-.vocab-option{padding:15px 20px;border:3px solid #ddd;border-radius:14px;cursor:pointer;text-align:left;transition:all .2s;background:#fafafa}
-.vocab-option:hover{border-color:var(--stat-color);transform:translateX(5px)}
-.vocab-option.selected{border-color:var(--stat-color);background:var(--stat-bg)}
-.vocab-option .vocab-title{font-size:16px;font-weight:bold;color:var(--text)}
-.vocab-option .vocab-info{font-size:12px;color:var(--sub);margin-top:4px}
+/* 词汇选择 - 网格勾选 */
+.list-toolbar{display:flex;justify-content:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.list-toolbar .btn-sm{background:#888}
+.list-toolbar .btn-sm.active-btn{background:var(--stat-color)}
+.list-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:320px;overflow-y:auto;padding:4px;margin-bottom:12px}
+.list-cell{padding:10px 4px;border:2px solid #ddd;border-radius:10px;cursor:pointer;text-align:center;transition:all .15s;background:#fafafa;font-size:14px;font-weight:bold;color:var(--sub);position:relative;user-select:none}
+.list-cell:hover{border-color:var(--stat-color);transform:translateY(-2px)}
+.list-cell.selected{border-color:var(--stat-color);background:var(--stat-bg);color:var(--stat-color);box-shadow:0 0 8px var(--btn-shadow)}
+.list-cell.selected::after{content:'✓';position:absolute;top:2px;right:4px;font-size:10px;color:var(--stat-color)}
+.list-cell.empty{opacity:0.3;cursor:not-allowed;border-style:dashed}
+.list-cell .list-num{font-size:14px}.list-cell .list-label{font-size:9px;margin-top:2px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-summary{text-align:center;font-size:13px;color:var(--sub);margin:8px 0}
+.list-summary strong{color:var(--stat-color);font-size:16px}
+@media(max-width:500px){.list-grid{grid-template-columns:repeat(5,1fr);gap:4px}.list-cell{padding:8px 2px;font-size:12px}.list-cell .list-num{font-size:12px}}
 .avatar-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;max-height:300px;overflow-y:auto;padding:10px;background:var(--stat-bg);border-radius:14px;margin:15px 0}
 .avatar-cell{aspect-ratio:1;border:3px solid transparent;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--container-bg)}
 .avatar-cell:hover{border-color:var(--stat-color);transform:scale(1.15);z-index:1}
@@ -139,11 +147,13 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <div class="flame-particles" id="flameParticles"></div>
 <div class="game-container">
 <!-- 词汇表+模式选择 -->
-<div id="vocabScreen"><h1>🎮 填字母挑战</h1><p class="subtitle">选择词汇表和游戏模式</p>
-<div class="select-grid" id="vocabList"></div>
-<div style="text-align:center;margin:15px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:10px">选择难度模式：</p>
+<div id="vocabScreen"><h1>🎮 填字母挑战</h1><p class="subtitle">勾选要练习的章节（可多选）</p>
+<div class="list-toolbar"><button class="btn btn-sm active-btn" onclick="selectAllLists()">全选</button><button class="btn btn-sm" onclick="deselectAllLists()">取消</button><button class="btn btn-sm" onclick="invertSelection()">反选</button></div>
+<div class="list-grid" id="listGrid"></div>
+<div class="list-summary" id="listSummary"></div>
+<div style="text-align:center;margin:10px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:8px">选择难度模式：</p>
 <div class="radio-group"><label><input type="radio" name="modeRadio" value="normal" checked>📖 普通</label><label><input type="radio" name="modeRadio" value="hell">🔥 地狱</label><label><input type="radio" name="modeRadio" value="mario">🍄 快枪手</label></div></div>
-<button class="btn" onclick="goToPlayerSetup()" style="margin-top:10px">下一步 →</button></div>
+<button class="btn" onclick="goToPlayerSetup()">下一步 →</button></div>
 
 <!-- 玩家设置 -->
 <div id="playerScreen" style="display:none"><h1>👤 你的身份</h1><p class="subtitle">选头像和昵称（可以跳过）</p>
@@ -171,8 +181,18 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <button class="btn" onclick="restartGame()">再来一次</button><button class="btn btn-sm" onclick="showVocabScreen()" style="background:#888">重新选择</button></div>
 </div>
 <script>
-// ==================== 词汇表 ====================
-const WORD_LISTS=[{id:'all',name:'全部词汇',info:'List 17 + y结尾，共20个单词',words:[{word:'TOAST',meaning:'吐司'},{word:'SOAKING',meaning:'浸泡'},{word:'THROAT',meaning:'喉咙'},{word:'SOAP',meaning:'肥皂'},{word:'GOAT',meaning:'山羊'},{word:'GROWN',meaning:'长大'},{word:'BELOW',meaning:'在下面'},{word:'YELLOW',meaning:'黄色'},{word:'WINDOW',meaning:'窗户'},{word:'PILLOW',meaning:'枕头'},{word:'CRY',meaning:'哭'},{word:'FLY',meaning:'飞'},{word:'SHY',meaning:'害羞'},{word:'SPY',meaning:'间谍'},{word:'SLY',meaning:'狡猾'},{word:'NOBODY',meaning:'没有人'},{word:'PUPPY',meaning:'小狗'},{word:'CHEEKY',meaning:'厚脸皮'},{word:'FAMILY',meaning:'家庭'},{word:'EMPTY',meaning:'空的'}]},{id:'list17',name:'List 17 - oa/ow 字母组合',info:'10个单词：oa和ow发/əʊ/音',words:[{word:'TOAST',meaning:'吐司'},{word:'SOAKING',meaning:'浸泡'},{word:'THROAT',meaning:'喉咙'},{word:'SOAP',meaning:'肥皂'},{word:'GOAT',meaning:'山羊'},{word:'GROWN',meaning:'长大'},{word:'BELOW',meaning:'在下面'},{word:'YELLOW',meaning:'黄色'},{word:'WINDOW',meaning:'窗户'},{word:'PILLOW',meaning:'枕头'}]},{id:'y-ending',name:'y 结尾拼写规则',info:'10个单词：辅音+y变i加后缀',words:[{word:'CRY',meaning:'哭'},{word:'FLY',meaning:'飞'},{word:'SHY',meaning:'害羞'},{word:'SPY',meaning:'间谍'},{word:'SLY',meaning:'狡猾'},{word:'NOBODY',meaning:'没有人'},{word:'PUPPY',meaning:'小狗'},{word:'CHEEKY',meaning:'厚脸皮'},{word:'FAMILY',meaning:'家庭'},{word:'EMPTY',meaning:'空的'}]}];
+// ==================== 词汇表（30个List，待填充） ====================
+const WORD_LISTS=(()=>{
+  const lists=[];
+  for(let i=1;i<=30;i++){
+    const w=[];
+    if(i===17)w.push({word:'TOAST',meaning:'吐司'},{word:'SOAKING',meaning:'浸泡'},{word:'THROAT',meaning:'喉咙'},{word:'SOAP',meaning:'肥皂'},{word:'GOAT',meaning:'山羊'},{word:'GROWN',meaning:'长大'},{word:'BELOW',meaning:'在下面'},{word:'YELLOW',meaning:'黄色'},{word:'WINDOW',meaning:'窗户'},{word:'PILLOW',meaning:'枕头'});
+    if(i===18)w.push({word:'CRY',meaning:'哭'},{word:'FLY',meaning:'飞'},{word:'SHY',meaning:'害羞'},{word:'SPY',meaning:'间谍'},{word:'SLY',meaning:'狡猾'},{word:'NOBODY',meaning:'没有人'},{word:'PUPPY',meaning:'小狗'},{word:'CHEEKY',meaning:'厚脸皮'},{word:'FAMILY',meaning:'家庭'},{word:'EMPTY',meaning:'空的'});
+    const labels={1:'',17:'oa/ow',18:'y→i'};
+    lists.push({id:'list'+i,num:i,label:labels[i]||'',words:w});
+  }
+  return lists;
+})();
 // ==================== 像素头像(15×4=60个) ====================
 const PIXEL_PATTERNS=[{name:'小猫',p:['00111100','01000010','10011001','10000001','10000001','10011001','01000010','00111100']},{name:'小狗',p:['00111100','01000010','10000001','10000001','10011001','10011001','01000010','00111100']},{name:'兔子',p:['00100100','01100110','01111110','01111110','00111100','00011000','00111100','01000010']},{name:'小熊',p:['00111100','01000010','10100101','10011001','10011001','10100101','01000010','00111100']},{name:'狐狸',p:['00111100','01000010','10000001','01111110','00011000','00011000','00100100','01000010']},{name:'猫头鹰',p:['00111100','01000010','10011001','10011001','10011001','10011001','01000010','00111100']},{name:'青蛙',p:['00111100','01000010','10022001','10000001','10000001','10000001','01011010','00100100']},{name:'小龙',p:['00111100','01000010','10022001','10011001','10000001','01111110','00011000','00100100']},{name:'企鹅',p:['00111100','01000010','10022001','11111111','10111101','10011001','01000010','00111100']},{name:'恐龙',p:['00111100','01111110','10022001','10000001','10000001','01111110','00011000','00100100']},{name:'小怪',p:['00111100','01111110','11022011','10011001','10000001','01111110','00011000','00100100']},{name:'小鸟',p:['00111100','01000010','10022001','10000001','10011001','01000010','00111100','00011000']},{name:'小鱼',p:['00111100','01000010','10022001','10000001','10000001','01000010','00111100','00011000']},{name:'仓鼠',p:['00111100','01111110','10022001','10000001','10000001','10000001','01000010','00111100']},{name:'独角兽',p:['00011000','00111100','01111110','10022001','10000001','10000001','01000010','00111100']}];
 const COLOR_SCHEMES=[['#FF8C42','#FFD166','#FFEAA7'],['#5DADE2','#85C1E9','#D6EAF8'],['#58D68D','#82E0AA','#D5F5E3'],['#AF7AC5','#D2B4DE','#E8DAEF']];
@@ -187,12 +207,32 @@ function loadLB(mode,listId){const k='wordfill_lb_'+mode+'_'+listId;try{return J
 function saveLB(mode,listId,entries){const k='wordfill_lb_'+mode+'_'+listId;const dedup=new Map();entries.forEach(e=>{const ex=dedup.get(e.name);if(!ex||e.score>ex.score)dedup.set(e.name,e);});const arr=Array.from(dedup.values()).sort((a,b)=>b.score-a.score).slice(0,10);localStorage.setItem(k,JSON.stringify(arr));return arr;}
 function addToLB(mode,listId,entry){const lb=loadLB(mode,listId);lb.push(entry);return saveLB(mode,listId,lb);}
 // ==================== 游戏状态 ====================
-let gameMode='normal',selectedListId='all',words=[],playerData=loadPlayer();
+let gameMode='normal',selectedListIds=new Set(WORD_LISTS.filter(w=>w.words.length>0).map(w=>w.id)),words=[],playerData=loadPlayer();
 let currentWordIndex=0,score=0,timeLeft,timerInterval,currentWord=null,missingIndices=[],filledIndices=new Set(),gameResults=[];
 let audioCtx=null,bgmInterval=null,bgmGain=null,currentBPM=120,marioN=0;
-// ==================== UI ====================
-function showVocabScreen(){stopBGM();clearInterval(timerInterval);document.body.className='';document.getElementById('flameParticles').innerHTML='';['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('vocabScreen').style.display='block';const g=document.getElementById('vocabList');g.innerHTML=WORD_LISTS.map(wl=>`<div class="vocab-option${wl.id===selectedListId?' selected':''}" onclick="selectVocab('${wl.id}')"><div class="vocab-title">${wl.name}</div><div class="vocab-info">${wl.info}</div></div>`).join('');}
-function selectVocab(id){selectedListId=id;showVocabScreen();}
+// ==================== 词汇选择 UI（网格勾选） ====================
+function showVocabScreen(){
+  stopBGM();clearInterval(timerInterval);document.body.className='';document.getElementById('flameParticles').innerHTML='';
+  ['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('vocabScreen').style.display='block';
+  renderListGrid();updateSummary();
+}
+function toggleList(id){if(!selectedListIds.has(id))selectedListIds.add(id);else selectedListIds.delete(id);renderListGrid();updateSummary();}
+function selectAllLists(){WORD_LISTS.filter(w=>w.words.length>0).forEach(w=>selectedListIds.add(w.id));renderListGrid();updateSummary();}
+function deselectAllLists(){selectedListIds.clear();renderListGrid();updateSummary();}
+function invertSelection(){WORD_LISTS.filter(w=>w.words.length>0).forEach(w=>{if(selectedListIds.has(w.id))selectedListIds.delete(w.id);else selectedListIds.add(w.id);});renderListGrid();updateSummary();}
+function renderListGrid(){
+  const g=document.getElementById('listGrid');
+  g.innerHTML=WORD_LISTS.map(wl=>{
+    const has=wl.words.length>0,sel=selectedListIds.has(wl.id);
+    return`<div class="list-cell${sel?' selected':''}${has?'':' empty'}" onclick="${has?\"toggleList('"+wl.id+"')\":''}" title="${has?(wl.label||'List '+wl.num):'待添加词汇'}"><div class="list-num">${wl.num}</div>${wl.label?`<div class="list-label">${wl.label}</div>`:''}</div>`;
+  }).join('');
+}
+function updateSummary(){
+  const total=Array.from(selectedListIds).reduce((sum,id)=>{const w=WORD_LISTS.find(wl=>wl.id===id);return sum+(w?w.words.length:0);},0);
+  document.getElementById('listSummary').innerHTML=`已选 <strong>${selectedListIds.size}</strong> 个章节，共 <strong>${total}</strong> 个单词`;
+  document.querySelector('#vocabScreen .btn').disabled=total===0;
+}
 function goToPlayerSetup(){document.getElementById('vocabScreen').style.display='none';document.getElementById('playerScreen').style.display='block';document.getElementById('playerName').value=playerData.name||'';renderAvatarGrid();updatePreview();}
 function updatePreview(){const av=ALL_AVATARS[playerData.avatar];renderPixelAvatar(document.getElementById('previewAvatar'),av,60);}
 function renderAvatarGrid(){const grid=document.getElementById('avatarGrid');grid.innerHTML='';ALL_AVATARS.forEach((av,i)=>{const cell=document.createElement('div');cell.className='avatar-cell'+(i===playerData.avatar?' selected':'');cell.onclick=()=>{playerData.avatar=i;renderAvatarGrid();updatePreview();};renderPixelAvatar(cell,av,28);grid.appendChild(cell);});}
@@ -216,19 +256,20 @@ function stopBGM(){if(bgmInterval){clearInterval(bgmInterval);bgmInterval=null;}
 function createFlameParticles(){const c=document.getElementById('flameParticles');c.innerHTML='';for(let i=0;i<30;i++){const f=document.createElement('div');f.className='flame';const s=Math.random()*4+2;f.style.width=s+'px';f.style.height=s+'px';f.style.left=Math.random()*100+'%';f.style.background=Math.random()>0.5?`hsl(${Math.random()*30+10},100%,${Math.random()*30+40}%)`:`hsl(${Math.random()*15},100%,${Math.random()*20+50}%)`;f.style.animationDuration=(Math.random()*4+3)+'s';f.style.animationDelay=Math.random()*4+'s';c.appendChild(f);}}
 function applyMode(mode){gameMode=mode;document.body.className='';document.getElementById('flameParticles').innerHTML='';if(mode==='hell'){document.body.classList.add('hell');createFlameParticles();}else if(mode==='mario')document.body.classList.add('mario');}
 // ==================== 游戏引擎 ====================
-function startGame(){const mr=document.querySelector('input[name="modeRadio"]:checked');applyMode(mr.value);savePlayer(playerData);const wl=WORD_LISTS.find(w=>w.id===selectedListId)||WORD_LISTS[0];words=wl.words;['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('gameScreen').style.display='block';currentWordIndex=0;score=0;timeLeft=gameMode==='hell'?90:(gameMode==='mario'?60:120);gameResults=[];const titles={hell:'🔥 地狱模式',mario:'🍄 快枪手模式',normal:'📖 填字母挑战'};document.getElementById('gameTitle').textContent=titles[gameMode];const hints={hell:'💀 看中文释义猜单词！',mario:'🍄 快来收集金币！',normal:'💡 点击空格或按键盘输入'};document.getElementById('hintText').textContent=hints[gameMode];document.getElementById('totalWords').textContent=words.length;updateScore();updateTimer();generateKeyboard();loadWord();startTimer();if(gameMode==='hell')startBGM(90);else if(gameMode==='mario')startBGM(60);initAudio();}
+function startGame(){const mr=document.querySelector('input[name="modeRadio"]:checked');applyMode(mr.value);savePlayer(playerData);words=[];selectedListIds.forEach(id=>{const wl=WORD_LISTS.find(w=>w.id===id);if(wl)words.push(...wl.words);});if(words.length===0)return;['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('gameScreen').style.display='block';currentWordIndex=0;score=0;timeLeft=gameMode==='hell'?90:(gameMode==='mario'?60:120);gameResults=[];const titles={hell:'🔥 地狱模式',mario:'🍄 快枪手模式',normal:'📖 填字母挑战'};document.getElementById('gameTitle').textContent=titles[gameMode];const hints={hell:'💀 看中文释义猜单词！',mario:'🍄 快来收集金币！',normal:'💡 点击空格或按键盘输入'};document.getElementById('hintText').textContent=hints[gameMode];document.getElementById('totalWords').textContent=words.length;updateScore();updateTimer();generateKeyboard();loadWord();startTimer();if(gameMode==='hell')startBGM(90);else if(gameMode==='mario')startBGM(60);initAudio();}
 function loadWord(){if(currentWordIndex>=words.length){endGame();return;}currentWord=words[currentWordIndex];const w=currentWord.word,wl=w.length;missingIndices=[];filledIndices.clear();if(gameMode==='hell'){const nr=wl<=6?1:2,ai=Array.from({length:wl},(_,i)=>i);for(let i=ai.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ai[i],ai[j]]=[ai[j],ai[i]];}const ri=new Set(ai.slice(0,nr));for(let i=0;i<wl;i++){if(!ri.has(i))missingIndices.push(i);}}else{const nh=Math.max(2,Math.floor(wl*0.4)),ai=Array.from({length:wl},(_,i)=>i);for(let i=ai.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ai[i],ai[j]]=[ai[j],ai[i]];}missingIndices=ai.slice(0,nh).sort((a,b)=>a-b);}renderWord();updateProgress();}
 function renderWord(){const c=document.getElementById('wordBoxes');c.innerHTML='';const w=currentWord.word;for(let i=0;i<w.length;i++){const b=document.createElement('div');b.className='letter-box';if(missingIndices.includes(i)){if(filledIndices.has(i)){b.classList.add('filled');b.textContent=w[i];}else{b.classList.add('missing');b.textContent='?';}}else{b.classList.add('revealed');b.textContent=w[i];}c.appendChild(b);}document.getElementById('currentNum').textContent=currentWordIndex+1;document.getElementById('wordMeaning').innerHTML=gameMode==='hell'?`<span style="opacity:0.6;font-size:13px">🔍 中文释义：</span>${currentWord.meaning}`:'';}
 function handleInput(letter){if(!currentWord||timeLeft<=0)return;let ti=-1;for(let idx of missingIndices){if(!filledIndices.has(idx)){ti=idx;break;}}if(ti===-1)return;const cl=currentWord.word[ti];if(letter===cl){filledIndices.add(ti);const pts=gameMode==='hell'?20:(gameMode==='mario'?15:10);score+=pts;playCorrectSound();showMsg('✅ 正确！+'+pts+'分','success');renderWord();updateScore();if(gameMode==='mario')spawnCoin(ti);if(filledIndices.size===missingIndices.length){gameResults.push({word:currentWord.word,meaning:currentWord.meaning,correct:true});playWordComplete();setTimeout(()=>{currentWordIndex++;loadWord();},600);}}else{const pen=gameMode==='hell'?15:(gameMode==='mario'?10:5);score-=pen;playWrongSound();showMsg('❌ 错误！答案是 '+cl+'，-'+pen+'分','error');updateScore();document.querySelectorAll('.letter-box.missing').forEach(b=>{if(b.textContent==='?'){b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),400);}});if(gameMode==='hell'){document.body.style.transform='translateX(4px)';setTimeout(()=>document.body.style.transform='translateX(-3px)',50);setTimeout(()=>document.body.style.transform='translateX(2px)',100);setTimeout(()=>document.body.style.transform='translateX(0)',150);}else if(gameMode==='mario'){const g2=document.querySelector('.game-container');g2.style.transform='translateY(-5px)';setTimeout(()=>g2.style.transform='translateY(0)',100);setTimeout(()=>g2.style.transform='translateY(-3px)',200);setTimeout(()=>g2.style.transform='translateY(0)',300);}}}
 function showMsg(t,type){const m=document.getElementById('message');m.textContent=t;m.className='message show '+type;setTimeout(()=>m.classList.remove('show'),1500);}
+function getListKey(){const ids=Array.from(selectedListIds).sort();return ids.length===WORD_LISTS.filter(w=>w.words.length>0).length?'all':ids.join('_');}
 function updateScore(){document.getElementById('score').textContent=score;}
 function updateProgress(){document.getElementById('wordCount').textContent=(currentWordIndex+1)+'/'+words.length;document.getElementById('progressBar').style.width=((currentWordIndex+1)/words.length*100)+'%';}
 function updateTimer(){const e=document.getElementById('timer');e.textContent=timeLeft;e.classList.toggle('urgent',gameMode==='hell'?timeLeft<=20:(gameMode==='mario'?timeLeft<=15:timeLeft<=30));}
 function startTimer(){clearInterval(timerInterval);timerInterval=setInterval(()=>{timeLeft--;updateTimer();if(gameMode==='hell'||gameMode==='mario')updateBGM();if(gameMode==='hell'&&timeLeft<=10&&timeLeft>0){const f=document.createElement('div');f.className='screen-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),500);}if(gameMode==='mario'&&timeLeft<=10&&timeLeft>0){const f=document.createElement('div');f.className='screen-flash';f.style.background='rgba(251,208,0,0.3)';document.body.appendChild(f);setTimeout(()=>f.remove(),500);}if(timeLeft<=0)endGame();},1000);}
 function spawnCoin(ti){const boxes=document.querySelectorAll('.letter-box'),tb=boxes[ti];if(!tb)return;const r=tb.getBoundingClientRect(),coin=document.createElement('div');coin.className='coin-spin';coin.textContent='🪙';coin.style.left=r.left+r.width/2-16+'px';coin.style.top=r.top+'px';document.body.appendChild(coin);setTimeout(()=>coin.remove(),800);}
 // ==================== 结束+排行榜 ====================
-function endGame(){clearInterval(timerInterval);stopBGM();document.getElementById('gameScreen').style.display='none';document.getElementById('endScreen').style.display='block';const endTitles={hell:'💀 挑战结束！',mario:'🍄 挑战结束！',normal:'🎉 挑战结束！'};document.getElementById('endTitle').textContent=endTitles[gameMode];document.getElementById('finalScore').textContent=score;playGameOver();let rt='';if(gameMode==='hell'){rt=score>=300?'👑 地狱之王！':(score>=150?'🔥 浴火重生！':(score>=0?'💪 地狱中幸存':'💀 被吞噬了'));}else if(gameMode==='mario'){rt=score>=120?'⭐ 超级快枪手！':(score>=80?'🍄 吃蘑菇变大！':(score>=0?'🌟 不错的速度':'🐢 被龟壳绊倒'));}else{rt=score>=200?'🏆 单词大师！':(score>=100?'👍 不错！':(score>=0?'💪 还可以':'📚 加油'));}document.getElementById('resultText').textContent=rt;const name=playerData.name.trim();if(name){addToLB(gameMode,selectedListId,{name:name,score:score,avatar:playerData.avatar,date:new Date().toISOString().slice(0,10)});}renderLeaderboard();document.getElementById('wordList').innerHTML=words.map((w,i)=>{const r=gameResults.find(g=>g.word===w.word);return'<div class="word-item"><span>'+(i+1)+'. '+w.word+' <small>('+w.meaning+')</small></span>'+(r?'<span class="correct">✓</span>':'<span class="wrong">✗</span>')+'</div>';}).join('');}
-function renderLeaderboard(){const lb=loadLB(gameMode,selectedListId),c=document.getElementById('lbContent');const modeNames={hell:'地狱',mario:'快枪手',normal:'普通'};document.getElementById('lbTitle').textContent='🏆 排行榜 · '+modeNames[gameMode]+'模式';if(lb.length===0){c.innerHTML='<div class="lb-empty">还没有成绩记录<br>快来完成一局成为第一名！</div>';return;}const myName=playerData.name.trim();c.innerHTML='<table class="lb-table"><thead><tr><th>#</th><th>玩家</th><th>分数</th><th>日期</th></tr></thead><tbody>'+lb.map((e,i)=>'<tr'+(myName&&e.name===myName?' class="lb-my-row"':'')+'><td class="lb-rank">'+(i+1)+'</td><td><span class="lb-avatar" id="lbav_'+i+'"></span><span class="lb-player">'+e.name+'</span></td><td class="lb-score">'+e.score+'</td><td style="font-size:11px">'+e.date+'</td></tr>').join('')+'</tbody></table>';lb.forEach((e,i)=>{const av=ALL_AVATARS[e.avatar]||ALL_AVATARS[0];renderPixelAvatar(document.getElementById('lbav_'+i),av,28);});}
+function endGame(){clearInterval(timerInterval);stopBGM();document.getElementById('gameScreen').style.display='none';document.getElementById('endScreen').style.display='block';const endTitles={hell:'💀 挑战结束！',mario:'🍄 挑战结束！',normal:'🎉 挑战结束！'};document.getElementById('endTitle').textContent=endTitles[gameMode];document.getElementById('finalScore').textContent=score;playGameOver();let rt='';if(gameMode==='hell'){rt=score>=300?'👑 地狱之王！':(score>=150?'🔥 浴火重生！':(score>=0?'💪 地狱中幸存':'💀 被吞噬了'));}else if(gameMode==='mario'){rt=score>=120?'⭐ 超级快枪手！':(score>=80?'🍄 吃蘑菇变大！':(score>=0?'🌟 不错的速度':'🐢 被龟壳绊倒'));}else{rt=score>=200?'🏆 单词大师！':(score>=100?'👍 不错！':(score>=0?'💪 还可以':'📚 加油'));}document.getElementById('resultText').textContent=rt;const name=playerData.name.trim();const listKey=getListKey();if(name){addToLB(gameMode,listKey,{name:name,score:score,avatar:playerData.avatar,date:new Date().toISOString().slice(0,10)});}renderLeaderboard();document.getElementById('wordList').innerHTML=words.map((w,i)=>{const r=gameResults.find(g=>g.word===w.word);return'<div class="word-item"><span>'+(i+1)+'. '+w.word+' <small>('+w.meaning+')</small></span>'+(r?'<span class="correct">✓</span>':'<span class="wrong">✗</span>')+'</div>';}).join('');}
+function renderLeaderboard(){const lb=loadLB(gameMode,getListKey()),c=document.getElementById('lbContent');const modeNames={hell:'地狱',mario:'快枪手',normal:'普通'};document.getElementById('lbTitle').textContent='🏆 排行榜 · '+modeNames[gameMode]+'模式';if(lb.length===0){c.innerHTML='<div class="lb-empty">还没有成绩记录<br>快来完成一局成为第一名！</div>';return;}const myName=playerData.name.trim();c.innerHTML='<table class="lb-table"><thead><tr><th>#</th><th>玩家</th><th>分数</th><th>日期</th></tr></thead><tbody>'+lb.map((e,i)=>'<tr'+(myName&&e.name===myName?' class="lb-my-row"':'')+'><td class="lb-rank">'+(i+1)+'</td><td><span class="lb-avatar" id="lbav_'+i+'"></span><span class="lb-player">'+e.name+'</span></td><td class="lb-score">'+e.score+'</td><td style="font-size:11px">'+e.date+'</td></tr>').join('')+'</tbody></table>';lb.forEach((e,i)=>{const av=ALL_AVATARS[e.avatar]||ALL_AVATARS[0];renderPixelAvatar(document.getElementById('lbav_'+i),av,28);});}
 function restartGame(){startGame();}
 // ==================== 事件 ====================
 document.addEventListener('keydown',e=>{if(document.getElementById('gameScreen').style.display==='none')return;if(/^[A-Za-z]$/.test(e.key)){e.preventDefault();handleInput(e.key.toUpperCase());}});
