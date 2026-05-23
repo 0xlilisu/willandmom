@@ -431,6 +431,25 @@ function loadWord() {
     missingIndices = ai.slice(0, nh).sort(function (a, b) { return a - b; });
   }
   renderWord(); updateProgress();
+  if (gameMode === 'hell') speakWord(currentWord.word, 2);
+}
+function speakWord(word, times) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var voices = window.speechSynthesis.getVoices();
+  var enVoice = voices.find(function (v) { return v.lang.startsWith('en'); });
+  for (var i = 0; i < times; i++) {
+    (function (delay) {
+      setTimeout(function () {
+        var u = new SpeechSynthesisUtterance(word);
+        u.lang = 'en-US';
+        u.rate = 0.75;
+        u.pitch = 1.1;
+        if (enVoice) u.voice = enVoice;
+        window.speechSynthesis.speak(u);
+      }, delay);
+    })(i * 1200);
+  }
 }
 
 function renderWord() {
@@ -444,7 +463,7 @@ function renderWord() {
     c.appendChild(b);
   }
   document.getElementById('currentNum').textContent = currentWordIndex + 1;
-  document.getElementById('wordMeaning').innerHTML = gameMode === 'hell' ? '<span style="opacity:0.6;font-size:13px">\ud83d\udd0d Meaning: </span>' + currentWord.meaning : '';
+  document.getElementById('wordMeaning').innerHTML = gameMode === 'hell' ? '<span style="opacity:0.6;font-size:13px">\ud83d\udd0a Listen & Spell: </span>' + currentWord.meaning : '';
 }
 
 function handleInput(letter) {
