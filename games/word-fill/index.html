@@ -187,8 +187,8 @@ const WORD_LISTS=(()=>{
   for(let i=1;i<=30;i++){
     const w=[];
     if(i===17)w.push({word:'TOAST',meaning:'吐司'},{word:'SOAKING',meaning:'浸泡'},{word:'THROAT',meaning:'喉咙'},{word:'SOAP',meaning:'肥皂'},{word:'GOAT',meaning:'山羊'},{word:'GROWN',meaning:'长大'},{word:'BELOW',meaning:'在下面'},{word:'YELLOW',meaning:'黄色'},{word:'WINDOW',meaning:'窗户'},{word:'PILLOW',meaning:'枕头'});
-    if(i===18)w.push({word:'CRY',meaning:'哭'},{word:'FLY',meaning:'飞'},{word:'SHY',meaning:'害羞'},{word:'SPY',meaning:'间谍'},{word:'SLY',meaning:'狡猾'},{word:'NOBODY',meaning:'没有人'},{word:'PUPPY',meaning:'小狗'},{word:'CHEEKY',meaning:'厚脸皮'},{word:'FAMILY',meaning:'家庭'},{word:'EMPTY',meaning:'空的'});
-    const labels={1:'',17:'oa/ow',18:'y→i'};
+    if(i===27)w.push({word:'CHEMIST',meaning:'化学家'},{word:'SCHEME',meaning:'计划方案'},{word:'SCHOOL',meaning:'学校'},{word:'CHARACTER',meaning:'性格角色'},{word:'ARCHITECT',meaning:'建筑师'},{word:'STOMACH',meaning:'胃'},{word:'CHORUS',meaning:'合唱'},{word:'ECHO',meaning:'回声'},{word:'TECHNOLOGY',meaning:'科技'},{word:'CHAOS',meaning:'混乱'});
+    const labels={17:'oa/ow',27:'ch'};
     lists.push({id:'list'+i,num:i,label:labels[i]||'',words:w});
   }
   return lists;
