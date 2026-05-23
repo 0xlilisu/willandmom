@@ -190,102 +190,364 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <button class="btn" onclick="restartGame()">再来一次</button><button class="btn btn-sm" onclick="showVocabScreen()" style="background:#888">重新选择</button></div>
 </div>
 <script>
-// ==================== 词汇表（30个List，待填充） ====================
-const WORD_LISTS=(()=>{
-  const lists=[];
-  for(let i=1;i<=30;i++){
-    const w=[];
-    if(i===17)w.push({word:'TOAST',meaning:'吐司'},{word:'SOAKING',meaning:'浸泡'},{word:'THROAT',meaning:'喉咙'},{word:'SOAP',meaning:'肥皂'},{word:'GOAT',meaning:'山羊'},{word:'GROWN',meaning:'长大'},{word:'BELOW',meaning:'在下面'},{word:'YELLOW',meaning:'黄色'},{word:'WINDOW',meaning:'窗户'},{word:'PILLOW',meaning:'枕头'});
-    if(i===27)w.push({word:'CHEMIST',meaning:'化学家'},{word:'SCHEME',meaning:'计划方案'},{word:'SCHOOL',meaning:'学校'},{word:'CHARACTER',meaning:'性格角色'},{word:'ARCHITECT',meaning:'建筑师'},{word:'STOMACH',meaning:'胃'},{word:'CHORUS',meaning:'合唱'},{word:'ECHO',meaning:'回声'},{word:'TECHNOLOGY',meaning:'科技'},{word:'CHAOS',meaning:'混乱'});
-    const labels={17:'oa/ow',27:'ch'};
-    lists.push({id:'list'+i,num:i,label:labels[i]||'',words:w});
+// === WORD LISTS (30 slots) ===
+const WORD_LISTS = (() => {
+  const lists = [];
+  for (let i = 1; i <= 30; i++) {
+    const w = [];
+    if (i === 17) w.push(
+      { word: 'TOAST', meaning: '\u5410\u53f8' },
+      { word: 'SOAKING', meaning: '\u6d78\u6ce1' },
+      { word: 'THROAT', meaning: '\u5589\u5499' },
+      { word: 'SOAP', meaning: '\u80a5\u7682' },
+      { word: 'GOAT', meaning: '\u5c71\u7f8a' },
+      { word: 'GROWN', meaning: '\u957f\u5927' },
+      { word: 'BELOW', meaning: '\u5728\u4e0b\u9762' },
+      { word: 'YELLOW', meaning: '\u9ec4\u8272' },
+      { word: 'WINDOW', meaning: '\u7a97\u6237' },
+      { word: 'PILLOW', meaning: '\u6795\u5934' }
+    );
+    if (i === 27) w.push(
+      { word: 'CHEMIST', meaning: '\u5316\u5b66\u5bb6' },
+      { word: 'SCHEME', meaning: '\u8ba1\u5212\u65b9\u6848' },
+      { word: 'SCHOOL', meaning: '\u5b66\u6821' },
+      { word: 'CHARACTER', meaning: '\u6027\u683c\u89d2\u8272' },
+      { word: 'ARCHITECT', meaning: '\u5efa\u7b51\u5e08' },
+      { word: 'STOMACH', meaning: '\u80c3' },
+      { word: 'CHORUS', meaning: '\u5408\u5531' },
+      { word: 'ECHO', meaning: '\u56de\u58f0' },
+      { word: 'TECHNOLOGY', meaning: '\u79d1\u6280' },
+      { word: 'CHAOS', meaning: '\u6df7\u4e71' }
+    );
+    const labels = { 17: 'oa/ow', 27: 'ch' };
+    lists.push({ id: 'list' + i, num: i, label: labels[i] || '', words: w });
   }
   return lists;
 })();
-// ==================== 像素头像(15×4=60个) ====================
-const PIXEL_PATTERNS=[{name:'小猫',p:['00111100','01000010','10011001','10000001','10000001','10011001','01000010','00111100']},{name:'小狗',p:['00111100','01000010','10000001','10000001','10011001','10011001','01000010','00111100']},{name:'兔子',p:['00100100','01100110','01111110','01111110','00111100','00011000','00111100','01000010']},{name:'小熊',p:['00111100','01000010','10100101','10011001','10011001','10100101','01000010','00111100']},{name:'狐狸',p:['00111100','01000010','10000001','01111110','00011000','00011000','00100100','01000010']},{name:'猫头鹰',p:['00111100','01000010','10011001','10011001','10011001','10011001','01000010','00111100']},{name:'青蛙',p:['00111100','01000010','10022001','10000001','10000001','10000001','01011010','00100100']},{name:'小龙',p:['00111100','01000010','10022001','10011001','10000001','01111110','00011000','00100100']},{name:'企鹅',p:['00111100','01000010','10022001','11111111','10111101','10011001','01000010','00111100']},{name:'恐龙',p:['00111100','01111110','10022001','10000001','10000001','01111110','00011000','00100100']},{name:'小怪',p:['00111100','01111110','11022011','10011001','10000001','01111110','00011000','00100100']},{name:'小鸟',p:['00111100','01000010','10022001','10000001','10011001','01000010','00111100','00011000']},{name:'小鱼',p:['00111100','01000010','10022001','10000001','10000001','01000010','00111100','00011000']},{name:'仓鼠',p:['00111100','01111110','10022001','10000001','10000001','10000001','01000010','00111100']},{name:'独角兽',p:['00011000','00111100','01111110','10022001','10000001','10000001','01000010','00111100']}];
-const COLOR_SCHEMES=[['#FF8C42','#FFD166','#FFEAA7'],['#5DADE2','#85C1E9','#D6EAF8'],['#58D68D','#82E0AA','#D5F5E3'],['#AF7AC5','#D2B4DE','#E8DAEF']];
-function buildAvatars(){const a=[];PIXEL_PATTERNS.forEach((p,pi)=>{COLOR_SCHEMES.forEach((c,ci)=>{a.push({id:pi*4+ci,name:p.name,pattern:p.p,colors:c});});});return a;}
-const ALL_AVATARS=buildAvatars();
-function renderPixelAvatar(container,avatar,size){container.innerHTML='';const g=document.createElement('div');g.className='pixel-avatar';g.style.width=size+'px';g.style.height=size+'px';avatar.pattern.forEach(row=>{for(let c of row){const cell=document.createElement('div');cell.className='pixel-cell';cell.style.width='100%';cell.style.height='100%';if(c==='1')cell.style.background=avatar.colors[0];else if(c==='2')cell.style.background=avatar.colors[1];else if(c==='3')cell.style.background='#FFD700';else cell.style.background='transparent';g.appendChild(cell);}});container.appendChild(g);}
-// ==================== 本地存储 ====================
-const LS_KEY='wordfill_player';
-function loadPlayer(){try{return JSON.parse(localStorage.getItem(LS_KEY))||{name:'',avatar:0};}catch(e){return{name:'',avatar:0};}}
-function savePlayer(d){localStorage.setItem(LS_KEY,JSON.stringify(d));}
-function loadLB(mode,listId){const k='wordfill_lb_'+mode+'_'+listId;try{return JSON.parse(localStorage.getItem(k))||[];}catch(e){return[];}}
-function saveLB(mode,listId,entries){const k='wordfill_lb_'+mode+'_'+listId;const dedup=new Map();entries.forEach(e=>{const ex=dedup.get(e.name);if(!ex||e.score>ex.score)dedup.set(e.name,e);});const arr=Array.from(dedup.values()).sort((a,b)=>b.score-a.score).slice(0,10);localStorage.setItem(k,JSON.stringify(arr));return arr;}
-function addToLB(mode,listId,entry){const lb=loadLB(mode,listId);lb.push(entry);return saveLB(mode,listId,lb);}
-// ==================== 游戏状态 ====================
-let gameMode='normal',selectedListIds=new Set(WORD_LISTS.filter(w=>w.words.length>0).map(w=>w.id)),words=[],playerData=loadPlayer();
-let currentWordIndex=0,score=0,timeLeft,timerInterval,currentWord=null,missingIndices=[],filledIndices=new Set(),gameResults=[];
-let audioCtx=null,bgmInterval=null,bgmGain=null,currentBPM=120,marioN=0;
-// ==================== 词汇选择 UI（网格勾选） ====================
-function showVocabScreen(){
-  stopBGM();clearInterval(timerInterval);document.body.className='';document.getElementById('flameParticles').innerHTML='';
-  ['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');
-  document.getElementById('vocabScreen').style.display='block';
-  renderListGrid();updateSummary();
+
+// === PIXEL AVATARS (15 shapes x 4 colors = 60) ===
+const PIXEL_PATTERNS = [
+  { name: 'Cat', p: ['00111100','01000010','10011001','10000001','10000001','10011001','01000010','00111100'] },
+  { name: 'Dog', p: ['00111100','01000010','10000001','10000001','10011001','10011001','01000010','00111100'] },
+  { name: 'Bunny', p: ['00100100','01100110','01111110','01111110','00111100','00011000','00111100','01000010'] },
+  { name: 'Bear', p: ['00111100','01000010','10100101','10011001','10011001','10100101','01000010','00111100'] },
+  { name: 'Fox', p: ['00111100','01000010','10000001','01111110','00011000','00011000','00100100','01000010'] },
+  { name: 'Owl', p: ['00111100','01000010','10011001','10011001','10011001','10011001','01000010','00111100'] },
+  { name: 'Frog', p: ['00111100','01000010','10022001','10000001','10000001','10000001','01011010','00100100'] },
+  { name: 'Dragon', p: ['00111100','01000010','10022001','10011001','10000001','01111110','00011000','00100100'] },
+  { name: 'Penguin', p: ['00111100','01000010','10022001','11111111','10111101','10011001','01000010','00111100'] },
+  { name: 'Dino', p: ['00111100','01111110','10022001','10000001','10000001','01111110','00011000','00100100'] },
+  { name: 'Monster', p: ['00111100','01111110','11022011','10011001','10000001','01111110','00011000','00100100'] },
+  { name: 'Bird', p: ['00111100','01000010','10022001','10000001','10011001','01000010','00111100','00011000'] },
+  { name: 'Fish', p: ['00111100','01000010','10022001','10000001','10000001','01000010','00111100','00011000'] },
+  { name: 'Hamster', p: ['00111100','01111110','10022001','10000001','10000001','10000001','01000010','00111100'] },
+  { name: 'Unicorn', p: ['00011000','00111100','01111110','10022001','10000001','10000001','01000010','00111100'] }
+];
+const COLOR_SCHEMES = [
+  ['#FF8C42', '#FFD166', '#FFEAA7'],
+  ['#5DADE2', '#85C1E9', '#D6EAF8'],
+  ['#58D68D', '#82E0AA', '#D5F5E3'],
+  ['#AF7AC5', '#D2B4DE', '#E8DAEF']
+];
+function buildAvatars() {
+  const a = [];
+  PIXEL_PATTERNS.forEach((p, pi) => {
+    COLOR_SCHEMES.forEach((c, ci) => {
+      a.push({ id: pi * 4 + ci, name: p.name, pattern: p.p, colors: c });
+    });
+  });
+  return a;
 }
-function toggleList(id){if(!selectedListIds.has(id))selectedListIds.add(id);else selectedListIds.delete(id);renderListGrid();updateSummary();}
-function selectAllLists(){WORD_LISTS.filter(w=>w.words.length>0).forEach(w=>selectedListIds.add(w.id));renderListGrid();updateSummary();}
-function deselectAllLists(){selectedListIds.clear();renderListGrid();updateSummary();}
-function invertSelection(){WORD_LISTS.filter(w=>w.words.length>0).forEach(w=>{if(selectedListIds.has(w.id))selectedListIds.delete(w.id);else selectedListIds.add(w.id);});renderListGrid();updateSummary();}
-function renderListGrid(){
-  const g=document.getElementById('listGrid');
-  g.innerHTML=WORD_LISTS.map(wl=>{
-    const has=wl.words.length>0,sel=selectedListIds.has(wl.id);
-    return`<div class="list-cell${sel?' selected':''}${has?'':' empty'}" onclick="${has?\"toggleList('"+wl.id+"')\":''}" title="${has?(wl.label||'List '+wl.num):'待添加词汇'}"><div class="list-num">${wl.num}</div>${wl.label?`<div class="list-label">${wl.label}</div>`:''}</div>`;
+const ALL_AVATARS = buildAvatars();
+
+function renderPixelAvatar(container, avatar, size) {
+  container.innerHTML = '';
+  const g = document.createElement('div');
+  g.className = 'pixel-avatar';
+  g.style.width = size + 'px';
+  g.style.height = size + 'px';
+  avatar.pattern.forEach(row => {
+    for (let c of row) {
+      const cell = document.createElement('div');
+      cell.className = 'pixel-cell';
+      cell.style.width = '100%';
+      cell.style.height = '100%';
+      if (c === '1') cell.style.background = avatar.colors[0];
+      else if (c === '2') cell.style.background = avatar.colors[1];
+      else if (c === '3') cell.style.background = '#FFD700';
+      else cell.style.background = 'transparent';
+      g.appendChild(cell);
+    }
+  });
+  container.appendChild(g);
+}
+
+// === LOCAL STORAGE ===
+const LS_KEY = 'wordfill_player';
+function loadPlayer() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || { name: '', avatar: 0 }; } catch (e) { return { name: '', avatar: 0 }; } }
+function savePlayer(d) { localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+function loadLB(mode, listId) { const k = 'wordfill_lb_' + mode + '_' + listId; try { return JSON.parse(localStorage.getItem(k)) || []; } catch (e) { return []; } }
+function saveLB(mode, listId, entries) {
+  const k = 'wordfill_lb_' + mode + '_' + listId;
+  const dedup = new Map();
+  entries.forEach(e => { const ex = dedup.get(e.name); if (!ex || e.score > ex.score) dedup.set(e.name, e); });
+  const arr = Array.from(dedup.values()).sort((a, b) => b.score - a.score).slice(0, 10);
+  localStorage.setItem(k, JSON.stringify(arr));
+  return arr;
+}
+function addToLB(mode, listId, entry) { const lb = loadLB(mode, listId); lb.push(entry); return saveLB(mode, listId, lb); }
+
+// === GAME STATE ===
+let gameMode = 'normal', selectedListIds = new Set(WORD_LISTS.filter(w => w.words.length > 0).map(w => w.id)), words = [], playerData = loadPlayer();
+let currentWordIndex = 0, score = 0, timeLeft, timerInterval, currentWord = null, missingIndices = [], filledIndices = new Set(), gameResults = [];
+let audioCtx = null, bgmInterval = null, bgmGain = null, currentBPM = 120, marioN = 0;
+
+// === VOCAB SELECTION UI ===
+function showVocabScreen() {
+  stopBGM(); clearInterval(timerInterval);
+  document.body.className = '';
+  document.getElementById('flameParticles').innerHTML = '';
+  ['vocabScreen', 'playerScreen', 'gameScreen', 'endScreen'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('vocabScreen').style.display = 'block';
+  renderListGrid();
+  updateSummary();
+}
+function toggleList(id) { if (selectedListIds.has(id)) selectedListIds.delete(id); else selectedListIds.add(id); renderListGrid(); updateSummary(); }
+function selectAllLists() { WORD_LISTS.filter(w => w.words.length > 0).forEach(w => selectedListIds.add(w.id)); renderListGrid(); updateSummary(); }
+function deselectAllLists() { selectedListIds.clear(); renderListGrid(); updateSummary(); }
+function invertSelection() { WORD_LISTS.filter(w => w.words.length > 0).forEach(w => { if (selectedListIds.has(w.id)) selectedListIds.delete(w.id); else selectedListIds.add(w.id); }); renderListGrid(); updateSummary(); }
+function renderListGrid() {
+  const g = document.getElementById('listGrid');
+  g.innerHTML = WORD_LISTS.map(wl => {
+    const has = wl.words.length > 0, sel = selectedListIds.has(wl.id);
+    return '<div class="list-cell' + (sel ? ' selected' : '') + (has ? '' : ' empty') + '" onclick="' + (has ? "toggleList('" + wl.id + "')" : '') + '" title="' + (has ? (wl.label || 'List ' + wl.num) : 'coming soon') + '"><div class="list-num">' + wl.num + '</div>' + (wl.label ? '<div class="list-label">' + wl.label + '</div>' : '') + '</div>';
   }).join('');
 }
-function updateSummary(){
-  const total=Array.from(selectedListIds).reduce((sum,id)=>{const w=WORD_LISTS.find(wl=>wl.id===id);return sum+(w?w.words.length:0);},0);
-  document.getElementById('listSummary').innerHTML=`已选 <strong>${selectedListIds.size}</strong> 个章节，共 <strong>${total}</strong> 个单词`;
-  document.querySelector('#vocabScreen .btn').disabled=total===0;
+function updateSummary() {
+  let total = 0; selectedListIds.forEach(id => { const w = WORD_LISTS.find(wl => wl.id === id); if (w) total += w.words.length; });
+  document.getElementById('listSummary').innerHTML = '\u5df2\u9009 <strong>' + selectedListIds.size + '</strong> \u4e2a\u7ae0\u8282\uff0c\u5171 <strong>' + total + '</strong> \u4e2a\u5355\u8bcd';
+  document.querySelector('#vocabScreen .btn') && (document.querySelector('#vocabScreen .btn').disabled = total === 0);
 }
-function selectModeCard(mode,el){gameMode=mode;document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');startGame();}
-function goToPlayerSetup(){document.getElementById('vocabScreen').style.display='none';document.getElementById('playerScreen').style.display='block';document.getElementById('playerName').value=playerData.name||'';renderAvatarGrid();updatePreview();}
-function updatePreview(){const av=ALL_AVATARS[playerData.avatar];renderPixelAvatar(document.getElementById('previewAvatar'),av,60);}
-function renderAvatarGrid(){const grid=document.getElementById('avatarGrid');grid.innerHTML='';ALL_AVATARS.forEach((av,i)=>{const cell=document.createElement('div');cell.className='avatar-cell'+(i===playerData.avatar?' selected':'');cell.onclick=()=>{playerData.avatar=i;renderAvatarGrid();updatePreview();};renderPixelAvatar(cell,av,28);grid.appendChild(cell);});}
-document.getElementById('playerName').addEventListener('input',function(){playerData.name=this.value.trim();});
-// ==================== 键盘 ====================
-const leftHandKeys=new Set(['Q','W','E','R','T','A','S','D','F','G','Z','X','C','V','B']),rightHandKeys=new Set(['Y','U','I','O','P','H','J','K','L','N','M']);
-function generateKeyboard(){const kb=document.getElementById('keyboard');kb.innerHTML='';[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']].forEach(row=>{const rd=document.createElement('div');rd.className='keyboard-row';row.forEach(letter=>{if((row[0]==='Q'&&letter==='Y')||(row[0]==='A'&&letter==='H')||(row[0]==='Z'&&letter==='N')){const d=document.createElement('div');d.className='key-divider';rd.appendChild(d);}const btn=document.createElement('button');btn.className='key '+(leftHandKeys.has(letter)?'key-left':'key-right');btn.textContent=letter;btn.onclick=()=>handleInput(letter);rd.appendChild(btn);});kb.appendChild(rd);});}
-// ==================== 音频 ====================
-function initAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)();bgmGain=audioCtx.createGain();bgmGain.gain.value=0.12;bgmGain.connect(audioCtx.destination);}if(audioCtx.state==='suspended')audioCtx.resume();}
-function note(freq,type,start,dur,vol,gainNode){if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,start);g.gain.setValueAtTime(vol,start);g.gain.exponentialRampToValueAtTime(0.01,start+dur);o.connect(g);g.connect(gainNode||audioCtx.destination);o.start(start);o.stop(start+dur);}
-function playCorrectSound(){if(!audioCtx)return;const n=audioCtx.currentTime;if(gameMode==='mario'){[988,1319].forEach((f,i)=>note(f,'square',n+i*0.07,0.12,0.12,null));return;}note(880,'sine',n,0.3,0.3,null);note(1320,'sine',n+0.06,0.4,0.2,null);}
-function playWrongSound(){if(!audioCtx)return;const n=audioCtx.currentTime;if(gameMode==='mario'){note(200,'triangle',n,0.25,0.15,null);return;}const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(150,n);o.frequency.setValueAtTime(100,n+0.15);g.gain.setValueAtTime(0.15,n);g.gain.exponentialRampToValueAtTime(0.01,n+0.4);o.connect(g);g.connect(audioCtx.destination);o.start(n);o.stop(n+0.4);}
-function playWordComplete(){if(!audioCtx)return;const n=audioCtx.currentTime;if(gameMode==='mario'){[523,659,784,1047,1319,1568].forEach((f,i)=>note(f,'square',n+i*0.05,0.1,0.1,null));return;}[523,659,784,1047].forEach((f,i)=>note(f,'sine',n+i*0.1,0.25,0.2,null));}
-function playGameOver(){if(!audioCtx)return;const n=audioCtx.currentTime;if(gameMode==='mario'){[659,587,523,392,330,262].forEach((f,i)=>note(f,'square',n+i*0.12,0.2,0.12,null));return;}[440,415,392,349,330].forEach((f,i)=>note(f,'triangle',n+i*0.2,0.35,0.25,null));}
-// ==================== BGM ====================
-function startBGM(total){stopBGM();if(!audioCtx)return;if(gameMode==='mario'){startMarioBGM();return;}currentBPM=total<=90?100:80;bgmInterval=setInterval(()=>{if(!audioCtx||audioCtx.state==='suspended')return;const n=audioCtx.currentTime,tot=gameMode==='hell'?90:120,r=(tot-timeLeft)/tot;currentBPM=(tot<=90?100:80)+r*((tot<=90?220:180)-(tot<=90?100:80));document.getElementById('bpmDisplay').textContent='🔥 BPM: '+Math.round(currentBPM);note(55,'sine',n,0.15,0.3,bgmGain);const ns=audioCtx.createBufferSource(),bs=audioCtx.sampleRate*0.05,b=audioCtx.createBuffer(1,bs,audioCtx.sampleRate),d=b.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;ns.buffer=b;const f=audioCtx.createBiquadFilter();f.type='highpass';f.frequency.value=8000;const g2=audioCtx.createGain();g2.gain.setValueAtTime(0.08,n);g2.gain.exponentialRampToValueAtTime(0.01,n+0.05);ns.connect(f);f.connect(g2);g2.connect(bgmGain);ns.start(n);ns.stop(n+0.05);},()=>60000/currentBPM);}
-function startMarioBGM(){const mel=[523,659,784,1047,784,1047,1319,1047,784,659,523,659,523,392,523];currentBPM=140;marioN=0;bgmInterval=setInterval(()=>{if(!audioCtx||audioCtx.state==='suspended')return;const n=audioCtx.currentTime,r=(60-timeLeft)/60;currentBPM=140+r*80;document.getElementById('bpmDisplay').textContent='🍄 BPM: '+Math.round(currentBPM);note(mel[marioN%mel.length],'square',n,0.1,0.06,bgmGain);marioN++;if(marioN%4===0)note(80,'sine',n,0.12,0.2,bgmGain);if(marioN%8===0)note(1568,'sine',n,0.08,0.05,bgmGain);},()=>60000/currentBPM);}
-function updateBGM(){if(!bgmInterval||gameMode==='mario')return;const tot=gameMode==='hell'?90:120,r=(tot-timeLeft)/tot;currentBPM=(tot<=90?100:80)+r*((tot<=90?220:180)-(tot<=90?100:80));}
-function stopBGM(){if(bgmInterval){clearInterval(bgmInterval);bgmInterval=null;}document.getElementById('bpmDisplay').textContent='BPM: --';}
-// ==================== 火焰粒子 ====================
-function createFlameParticles(){const c=document.getElementById('flameParticles');c.innerHTML='';for(let i=0;i<30;i++){const f=document.createElement('div');f.className='flame';const s=Math.random()*4+2;f.style.width=s+'px';f.style.height=s+'px';f.style.left=Math.random()*100+'%';f.style.background=Math.random()>0.5?`hsl(${Math.random()*30+10},100%,${Math.random()*30+40}%)`:`hsl(${Math.random()*15},100%,${Math.random()*20+50}%)`;f.style.animationDuration=(Math.random()*4+3)+'s';f.style.animationDelay=Math.random()*4+'s';c.appendChild(f);}}
-function applyMode(mode){gameMode=mode;document.body.className='';document.getElementById('flameParticles').innerHTML='';if(mode==='hell'){document.body.classList.add('hell');createFlameParticles();}else if(mode==='mario')document.body.classList.add('mario');}
-// ==================== 游戏引擎 ====================
-function startGame(){if(!gameMode)gameMode='normal';applyMode(gameMode);savePlayer(playerData);words=[];selectedListIds.forEach(id=>{const wl=WORD_LISTS.find(w=>w.id===id);if(wl)words.push(...wl.words);});if(words.length===0)return;['vocabScreen','playerScreen','gameScreen','endScreen'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('gameScreen').style.display='block';currentWordIndex=0;score=0;timeLeft=gameMode==='hell'?90:(gameMode==='mario'?60:120);gameResults=[];const titles={hell:'🔥 地狱模式',mario:'🍄 快枪手模式',normal:'📖 填字母挑战'};document.getElementById('gameTitle').textContent=titles[gameMode];const hints={hell:'💀 看中文释义猜单词！',mario:'🍄 快来收集金币！',normal:'💡 点击空格或按键盘输入'};document.getElementById('hintText').textContent=hints[gameMode];document.getElementById('totalWords').textContent=words.length;updateScore();updateTimer();generateKeyboard();loadWord();startTimer();if(gameMode==='hell')startBGM(90);else if(gameMode==='mario')startBGM(60);initAudio();}
-function loadWord(){if(currentWordIndex>=words.length){endGame();return;}currentWord=words[currentWordIndex];const w=currentWord.word,wl=w.length;missingIndices=[];filledIndices.clear();if(gameMode==='hell'){const nr=wl<=6?1:2,ai=Array.from({length:wl},(_,i)=>i);for(let i=ai.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ai[i],ai[j]]=[ai[j],ai[i]];}const ri=new Set(ai.slice(0,nr));for(let i=0;i<wl;i++){if(!ri.has(i))missingIndices.push(i);}}else{const nh=Math.max(2,Math.floor(wl*0.4)),ai=Array.from({length:wl},(_,i)=>i);for(let i=ai.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ai[i],ai[j]]=[ai[j],ai[i]];}missingIndices=ai.slice(0,nh).sort((a,b)=>a-b);}renderWord();updateProgress();}
-function renderWord(){const c=document.getElementById('wordBoxes');c.innerHTML='';const w=currentWord.word;for(let i=0;i<w.length;i++){const b=document.createElement('div');b.className='letter-box';if(missingIndices.includes(i)){if(filledIndices.has(i)){b.classList.add('filled');b.textContent=w[i];}else{b.classList.add('missing');b.textContent='?';}}else{b.classList.add('revealed');b.textContent=w[i];}c.appendChild(b);}document.getElementById('currentNum').textContent=currentWordIndex+1;document.getElementById('wordMeaning').innerHTML=gameMode==='hell'?`<span style="opacity:0.6;font-size:13px">🔍 中文释义：</span>${currentWord.meaning}`:'';}
-function handleInput(letter){if(!currentWord||timeLeft<=0)return;let ti=-1;for(let idx of missingIndices){if(!filledIndices.has(idx)){ti=idx;break;}}if(ti===-1)return;const cl=currentWord.word[ti];if(letter===cl){filledIndices.add(ti);const pts=gameMode==='hell'?20:(gameMode==='mario'?15:10);score+=pts;playCorrectSound();showMsg('✅ 正确！+'+pts+'分','success');renderWord();updateScore();if(gameMode==='mario')spawnCoin(ti);if(filledIndices.size===missingIndices.length){gameResults.push({word:currentWord.word,meaning:currentWord.meaning,correct:true});playWordComplete();setTimeout(()=>{currentWordIndex++;loadWord();},600);}}else{const pen=gameMode==='hell'?15:(gameMode==='mario'?10:5);score-=pen;playWrongSound();showMsg('❌ 错误！答案是 '+cl+'，-'+pen+'分','error');updateScore();document.querySelectorAll('.letter-box.missing').forEach(b=>{if(b.textContent==='?'){b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),400);}});if(gameMode==='hell'){document.body.style.transform='translateX(4px)';setTimeout(()=>document.body.style.transform='translateX(-3px)',50);setTimeout(()=>document.body.style.transform='translateX(2px)',100);setTimeout(()=>document.body.style.transform='translateX(0)',150);}else if(gameMode==='mario'){const g2=document.querySelector('.game-container');g2.style.transform='translateY(-5px)';setTimeout(()=>g2.style.transform='translateY(0)',100);setTimeout(()=>g2.style.transform='translateY(-3px)',200);setTimeout(()=>g2.style.transform='translateY(0)',300);}}}
-function showMsg(t,type){const m=document.getElementById('message');m.textContent=t;m.className='message show '+type;setTimeout(()=>m.classList.remove('show'),1500);}
-function getListKey(){const ids=Array.from(selectedListIds).sort();return ids.length===WORD_LISTS.filter(w=>w.words.length>0).length?'all':ids.join('_');}
-function updateScore(){document.getElementById('score').textContent=score;}
-function updateProgress(){document.getElementById('wordCount').textContent=(currentWordIndex+1)+'/'+words.length;document.getElementById('progressBar').style.width=((currentWordIndex+1)/words.length*100)+'%';}
-function updateTimer(){const e=document.getElementById('timer');e.textContent=timeLeft;e.classList.toggle('urgent',gameMode==='hell'?timeLeft<=20:(gameMode==='mario'?timeLeft<=15:timeLeft<=30));}
-function startTimer(){clearInterval(timerInterval);timerInterval=setInterval(()=>{timeLeft--;updateTimer();if(gameMode==='hell'||gameMode==='mario')updateBGM();if(gameMode==='hell'&&timeLeft<=10&&timeLeft>0){const f=document.createElement('div');f.className='screen-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),500);}if(gameMode==='mario'&&timeLeft<=10&&timeLeft>0){const f=document.createElement('div');f.className='screen-flash';f.style.background='rgba(251,208,0,0.3)';document.body.appendChild(f);setTimeout(()=>f.remove(),500);}if(timeLeft<=0)endGame();},1000);}
-function spawnCoin(ti){const boxes=document.querySelectorAll('.letter-box'),tb=boxes[ti];if(!tb)return;const r=tb.getBoundingClientRect(),coin=document.createElement('div');coin.className='coin-spin';coin.textContent='🪙';coin.style.left=r.left+r.width/2-16+'px';coin.style.top=r.top+'px';document.body.appendChild(coin);setTimeout(()=>coin.remove(),800);}
-// ==================== 结束+排行榜 ====================
-function endGame(){clearInterval(timerInterval);stopBGM();document.getElementById('gameScreen').style.display='none';document.getElementById('endScreen').style.display='block';const endTitles={hell:'💀 挑战结束！',mario:'🍄 挑战结束！',normal:'🎉 挑战结束！'};document.getElementById('endTitle').textContent=endTitles[gameMode];document.getElementById('finalScore').textContent=score;playGameOver();let rt='';if(gameMode==='hell'){rt=score>=300?'👑 地狱之王！':(score>=150?'🔥 浴火重生！':(score>=0?'💪 地狱中幸存':'💀 被吞噬了'));}else if(gameMode==='mario'){rt=score>=120?'⭐ 超级快枪手！':(score>=80?'🍄 吃蘑菇变大！':(score>=0?'🌟 不错的速度':'🐢 被龟壳绊倒'));}else{rt=score>=200?'🏆 单词大师！':(score>=100?'👍 不错！':(score>=0?'💪 还可以':'📚 加油'));}document.getElementById('resultText').textContent=rt;const name=playerData.name.trim();const listKey=getListKey();if(name){addToLB(gameMode,listKey,{name:name,score:score,avatar:playerData.avatar,date:new Date().toISOString().slice(0,10)});}renderLeaderboard();document.getElementById('wordList').innerHTML=words.map((w,i)=>{const r=gameResults.find(g=>g.word===w.word);return'<div class="word-item"><span>'+(i+1)+'. '+w.word+' <small>('+w.meaning+')</small></span>'+(r?'<span class="correct">✓</span>':'<span class="wrong">✗</span>')+'</div>';}).join('');}
-function renderLeaderboard(){const lb=loadLB(gameMode,getListKey()),c=document.getElementById('lbContent');const modeNames={hell:'地狱',mario:'快枪手',normal:'普通'};document.getElementById('lbTitle').textContent='🏆 排行榜 · '+modeNames[gameMode]+'模式';if(lb.length===0){c.innerHTML='<div class="lb-empty">还没有成绩记录<br>快来完成一局成为第一名！</div>';return;}const myName=playerData.name.trim();c.innerHTML='<table class="lb-table"><thead><tr><th>#</th><th>玩家</th><th>分数</th><th>日期</th></tr></thead><tbody>'+lb.map((e,i)=>'<tr'+(myName&&e.name===myName?' class="lb-my-row"':'')+'><td class="lb-rank">'+(i+1)+'</td><td><span class="lb-avatar" id="lbav_'+i+'"></span><span class="lb-player">'+e.name+'</span></td><td class="lb-score">'+e.score+'</td><td style="font-size:11px">'+e.date+'</td></tr>').join('')+'</tbody></table>';lb.forEach((e,i)=>{const av=ALL_AVATARS[e.avatar]||ALL_AVATARS[0];renderPixelAvatar(document.getElementById('lbav_'+i),av,28);});}
-function restartGame(){startGame();}
-// ==================== 事件 ====================
-document.addEventListener('keydown',e=>{if(document.getElementById('gameScreen').style.display==='none')return;if(/^[A-Za-z]$/.test(e.key)){e.preventDefault();handleInput(e.key.toUpperCase());}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('playerScreen').style.display!=='none')startGame();});
-// ==================== 初始化 ====================
-generateKeyboard();showVocabScreen();
+
+// === MODE CARD ===
+function selectModeCard(mode, el) {
+  gameMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  startGame();
+}
+
+// === PLAYER SETUP ===
+function goToPlayerSetup() {
+  document.getElementById('vocabScreen').style.display = 'none';
+  document.getElementById('playerScreen').style.display = 'block';
+  document.getElementById('playerName').value = playerData.name || '';
+  renderAvatarGrid();
+  updatePreview();
+}
+function updatePreview() { const av = ALL_AVATARS[playerData.avatar]; renderPixelAvatar(document.getElementById('previewAvatar'), av, 60); }
+function renderAvatarGrid() {
+  const grid = document.getElementById('avatarGrid');
+  grid.innerHTML = '';
+  ALL_AVATARS.forEach((av, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'avatar-cell' + (i === playerData.avatar ? ' selected' : '');
+    cell.onclick = function () { playerData.avatar = i; renderAvatarGrid(); updatePreview(); };
+    renderPixelAvatar(cell, av, 28);
+    grid.appendChild(cell);
+  });
+}
+document.getElementById('playerName').addEventListener('input', function () { playerData.name = this.value.trim(); });
+
+// === KEYBOARD ===
+const leftHandKeys = new Set(['Q', 'W', 'E', 'R', 'T', 'A', 'S', 'D', 'F', 'G', 'Z', 'X', 'C', 'V', 'B']);
+const rightHandKeys = new Set(['Y', 'U', 'I', 'O', 'P', 'H', 'J', 'K', 'L', 'N', 'M']);
+function generateKeyboard() {
+  const kb = document.getElementById('keyboard'); kb.innerHTML = '';
+  [['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'], ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'], ['Z', 'X', 'C', 'V', 'B', 'N', 'M']].forEach(row => {
+    const rd = document.createElement('div'); rd.className = 'keyboard-row';
+    row.forEach(letter => {
+      if ((row[0] === 'Q' && letter === 'Y') || (row[0] === 'A' && letter === 'H') || (row[0] === 'Z' && letter === 'N')) { const d = document.createElement('div'); d.className = 'key-divider'; rd.appendChild(d); }
+      const btn = document.createElement('button');
+      btn.className = 'key ' + (leftHandKeys.has(letter) ? 'key-left' : 'key-right');
+      btn.textContent = letter;
+      btn.onclick = function () { handleInput(letter); };
+      rd.appendChild(btn);
+    });
+    kb.appendChild(rd);
+  });
+}
+
+// === AUDIO ===
+function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); bgmGain = audioCtx.createGain(); bgmGain.gain.value = 0.12; bgmGain.connect(audioCtx.destination); } if (audioCtx.state === 'suspended') audioCtx.resume(); }
+function note(freq, type, start, dur, vol, gainNode) { if (!audioCtx) return; const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, start); g.gain.setValueAtTime(vol, start); g.gain.exponentialRampToValueAtTime(0.01, start + dur); o.connect(g); g.connect(gainNode || audioCtx.destination); o.start(start); o.stop(start + dur); }
+function playCorrectSound() { if (!audioCtx) return; const n = audioCtx.currentTime; if (gameMode === 'mario') { [988, 1319].forEach((f, i) => note(f, 'square', n + i * 0.07, 0.12, 0.12, null)); return; } note(880, 'sine', n, 0.3, 0.3, null); note(1320, 'sine', n + 0.06, 0.4, 0.2, null); }
+function playWrongSound() { if (!audioCtx) return; const n = audioCtx.currentTime; if (gameMode === 'mario') { note(200, 'triangle', n, 0.25, 0.15, null); return; } const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(150, n); o.frequency.setValueAtTime(100, n + 0.15); g.gain.setValueAtTime(0.15, n); g.gain.exponentialRampToValueAtTime(0.01, n + 0.4); o.connect(g); g.connect(audioCtx.destination); o.start(n); o.stop(n + 0.4); }
+function playWordComplete() { if (!audioCtx) return; const n = audioCtx.currentTime; if (gameMode === 'mario') { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => note(f, 'square', n + i * 0.05, 0.1, 0.1, null)); return; } [523, 659, 784, 1047].forEach((f, i) => note(f, 'sine', n + i * 0.1, 0.25, 0.2, null)); }
+function playGameOver() { if (!audioCtx) return; const n = audioCtx.currentTime; if (gameMode === 'mario') { [659, 587, 523, 392, 330, 262].forEach((f, i) => note(f, 'square', n + i * 0.12, 0.2, 0.12, null)); return; } [440, 415, 392, 349, 330].forEach((f, i) => note(f, 'triangle', n + i * 0.2, 0.35, 0.25, null)); }
+
+// === BGM ===
+function startBGM(total) { stopBGM(); if (!audioCtx) return; if (gameMode === 'mario') { startMarioBGM(); return; } currentBPM = total <= 90 ? 100 : 80; bgmInterval = setInterval(function () { if (!audioCtx || audioCtx.state === 'suspended') return; const n = audioCtx.currentTime, tot = gameMode === 'hell' ? 90 : 120, r = (tot - timeLeft) / tot; currentBPM = (tot <= 90 ? 100 : 80) + r * ((tot <= 90 ? 220 : 180) - (tot <= 90 ? 100 : 80)); document.getElementById('bpmDisplay').textContent = '\ud83d\udd25 BPM: ' + Math.round(currentBPM); note(55, 'sine', n, 0.15, 0.3, bgmGain); const ns = audioCtx.createBufferSource(), bs = audioCtx.sampleRate * 0.05, b = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < bs; i++)d[i] = Math.random() * 2 - 1; ns.buffer = b; const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 8000; const g2 = audioCtx.createGain(); g2.gain.setValueAtTime(0.08, n); g2.gain.exponentialRampToValueAtTime(0.01, n + 0.05); ns.connect(f); f.connect(g2); g2.connect(bgmGain); ns.start(n); ns.stop(n + 0.05); }, function () { return 60000 / currentBPM; }); }
+function startMarioBGM() { const mel = [523, 659, 784, 1047, 784, 1047, 1319, 1047, 784, 659, 523, 659, 523, 392, 523]; currentBPM = 140; marioN = 0; bgmInterval = setInterval(function () { if (!audioCtx || audioCtx.state === 'suspended') return; const n = audioCtx.currentTime, r = (60 - timeLeft) / 60; currentBPM = 140 + r * 80; document.getElementById('bpmDisplay').textContent = '\ud83c\udf44 BPM: ' + Math.round(currentBPM); note(mel[marioN % mel.length], 'square', n, 0.1, 0.06, bgmGain); marioN++; if (marioN % 4 === 0) note(80, 'sine', n, 0.12, 0.2, bgmGain); if (marioN % 8 === 0) note(1568, 'sine', n, 0.08, 0.05, bgmGain); }, function () { return 60000 / currentBPM; }); }
+function updateBGM() { if (!bgmInterval || gameMode === 'mario') return; const tot = gameMode === 'hell' ? 90 : 120, r = (tot - timeLeft) / tot; currentBPM = (tot <= 90 ? 100 : 80) + r * ((tot <= 90 ? 220 : 180) - (tot <= 90 ? 100 : 80)); }
+function stopBGM() { if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; } document.getElementById('bpmDisplay').textContent = 'BPM: --'; }
+
+// === FLAME PARTICLES ===
+function createFlameParticles() { const c = document.getElementById('flameParticles'); c.innerHTML = ''; for (let i = 0; i < 30; i++) { const f = document.createElement('div'); f.className = 'flame'; const s = Math.random() * 4 + 2; f.style.width = s + 'px'; f.style.height = s + 'px'; f.style.left = Math.random() * 100 + '%'; f.style.background = Math.random() > 0.5 ? 'hsl(' + (Math.random() * 30 + 10) + ',100%,' + (Math.random() * 30 + 40) + '%)' : 'hsl(' + (Math.random() * 15) + ',100%,' + (Math.random() * 20 + 50) + '%)'; f.style.animationDuration = (Math.random() * 4 + 3) + 's'; f.style.animationDelay = Math.random() * 4 + 's'; c.appendChild(f); } }
+function applyMode(mode) { gameMode = mode; document.body.className = ''; document.getElementById('flameParticles').innerHTML = ''; if (mode === 'hell') { document.body.classList.add('hell'); createFlameParticles(); } else if (mode === 'mario') document.body.classList.add('mario'); }
+
+// === GAME ENGINE ===
+function startGame() {
+  if (!gameMode) gameMode = 'normal';
+  applyMode(gameMode);
+  savePlayer(playerData);
+  words = []; selectedListIds.forEach(id => { const wl = WORD_LISTS.find(w => w.id === id); if (wl) words.push.apply(words, wl.words); });
+  if (words.length === 0) return;
+  ['vocabScreen', 'playerScreen', 'gameScreen', 'endScreen'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('gameScreen').style.display = 'block';
+  currentWordIndex = 0; score = 0; timeLeft = gameMode === 'hell' ? 90 : (gameMode === 'mario' ? 60 : 120); gameResults = [];
+  var titles = { hell: '\ud83d\udd25 Hell Mode', mario: '\ud83c\udf44 Quick Draw', normal: '\ud83d\udcd6 Word Fill' };
+  document.getElementById('gameTitle').textContent = titles[gameMode];
+  var hints = { hell: '\ud83d\udc80 Read Chinese meaning! Type to fill.', mario: '\ud83c\udf44 Collect coins! Type to fill.', normal: '\ud83d\udca1 Click blanks or type to fill.' };
+  document.getElementById('hintText').textContent = hints[gameMode];
+  document.getElementById('totalWords').textContent = words.length;
+  updateScore(); updateTimer(); generateKeyboard(); loadWord(); startTimer();
+  if (gameMode === 'hell') startBGM(90); else if (gameMode === 'mario') startBGM(60);
+  initAudio();
+}
+
+function loadWord() {
+  if (currentWordIndex >= words.length) { endGame(); return; }
+  currentWord = words[currentWordIndex]; var w = currentWord.word, wl = w.length;
+  missingIndices = []; filledIndices.clear();
+  if (gameMode === 'hell') {
+    var nr = wl <= 6 ? 1 : 2, ai = Array.from({ length: wl }, function (_, i) { return i; });
+    for (var i = ai.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var _a = [ai[j], ai[i]]; ai[i] = _a[0]; ai[j] = _a[1]; }
+    var ri = new Set(ai.slice(0, nr));
+    for (var i = 0; i < wl; i++) { if (!ri.has(i)) missingIndices.push(i); }
+  } else {
+    var nh = Math.max(2, Math.floor(wl * 0.4)), ai = Array.from({ length: wl }, function (_, i) { return i; });
+    for (var i = ai.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var _a = [ai[j], ai[i]]; ai[i] = _a[0]; ai[j] = _a[1]; }
+    missingIndices = ai.slice(0, nh).sort(function (a, b) { return a - b; });
+  }
+  renderWord(); updateProgress();
+}
+
+function renderWord() {
+  var c = document.getElementById('wordBoxes'); c.innerHTML = ''; var w = currentWord.word;
+  for (var i = 0; i < w.length; i++) {
+    var b = document.createElement('div'); b.className = 'letter-box';
+    if (missingIndices.includes(i)) {
+      if (filledIndices.has(i)) { b.classList.add('filled'); b.textContent = w[i]; }
+      else { b.classList.add('missing'); b.textContent = '?'; }
+    } else { b.classList.add('revealed'); b.textContent = w[i]; }
+    c.appendChild(b);
+  }
+  document.getElementById('currentNum').textContent = currentWordIndex + 1;
+  document.getElementById('wordMeaning').innerHTML = gameMode === 'hell' ? '<span style="opacity:0.6;font-size:13px">\ud83d\udd0d Meaning: </span>' + currentWord.meaning : '';
+}
+
+function handleInput(letter) {
+  if (!currentWord || timeLeft <= 0) return;
+  var ti = -1;
+  for (var _i = 0, missingIndices_1 = missingIndices; _i < missingIndices_1.length; _i++) { var idx = missingIndices_1[_i]; if (!filledIndices.has(idx)) { ti = idx; break; } }
+  if (ti === -1) return;
+  var cl = currentWord.word[ti];
+  if (letter === cl) {
+    filledIndices.add(ti);
+    var pts = gameMode === 'hell' ? 20 : (gameMode === 'mario' ? 15 : 10);
+    score += pts; playCorrectSound();
+    showMsg('\u2705 Correct! +' + pts, 'success');
+    renderWord(); updateScore();
+    if (gameMode === 'mario') spawnCoin(ti);
+    if (filledIndices.size === missingIndices.length) {
+      gameResults.push({ word: currentWord.word, meaning: currentWord.meaning, correct: true });
+      playWordComplete();
+      setTimeout(function () { currentWordIndex++; loadWord(); }, 600);
+    }
+  } else {
+    var pen = gameMode === 'hell' ? 15 : (gameMode === 'mario' ? 10 : 5);
+    score -= pen; playWrongSound();
+    showMsg('\u274c Wrong! Answer is ' + cl + ', -' + pen, 'error');
+    updateScore();
+    document.querySelectorAll('.letter-box.missing').forEach(function (b) { if (b.textContent === '?') { b.classList.add('wrong'); setTimeout(function () { b.classList.remove('wrong'); }, 400); } });
+    if (gameMode === 'hell') {
+      document.body.style.transform = 'translateX(4px)'; setTimeout(function () { document.body.style.transform = 'translateX(-3px)'; }, 50); setTimeout(function () { document.body.style.transform = 'translateX(2px)'; }, 100); setTimeout(function () { document.body.style.transform = 'translateX(0)'; }, 150);
+    } else if (gameMode === 'mario') {
+      var g2 = document.querySelector('.game-container'); g2.style.transform = 'translateY(-5px)'; setTimeout(function () { g2.style.transform = 'translateY(0)'; }, 100); setTimeout(function () { g2.style.transform = 'translateY(-3px)'; }, 200); setTimeout(function () { g2.style.transform = 'translateY(0)'; }, 300);
+    }
+  }
+}
+
+function showMsg(t, type) { var m = document.getElementById('message'); m.textContent = t; m.className = 'message show ' + type; setTimeout(function () { m.classList.remove('show'); }, 1500); }
+function getListKey() { var ids = Array.from(selectedListIds).sort(); return ids.length === WORD_LISTS.filter(function (w) { return w.words.length > 0; }).length ? 'all' : ids.join('_'); }
+function updateScore() { document.getElementById('score').textContent = score; }
+function updateProgress() { document.getElementById('wordCount').textContent = (currentWordIndex + 1) + '/' + words.length; document.getElementById('progressBar').style.width = ((currentWordIndex + 1) / words.length * 100) + '%'; }
+function updateTimer() { var e = document.getElementById('timer'); e.textContent = timeLeft; e.classList.toggle('urgent', gameMode === 'hell' ? timeLeft <= 20 : (gameMode === 'mario' ? timeLeft <= 15 : timeLeft <= 30)); }
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(function () {
+    timeLeft--; updateTimer();
+    if (gameMode === 'hell' || gameMode === 'mario') updateBGM();
+    if (gameMode === 'hell' && timeLeft <= 10 && timeLeft > 0) { var f = document.createElement('div'); f.className = 'screen-flash'; document.body.appendChild(f); setTimeout(function () { f.remove(); }, 500); }
+    if (gameMode === 'mario' && timeLeft <= 10 && timeLeft > 0) { var f = document.createElement('div'); f.className = 'screen-flash'; f.style.background = 'rgba(251,208,0,0.3)'; document.body.appendChild(f); setTimeout(function () { f.remove(); }, 500); }
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+}
+function spawnCoin(ti) {
+  var boxes = document.querySelectorAll('.letter-box'), tb = boxes[ti]; if (!tb) return;
+  var r = tb.getBoundingClientRect(), coin = document.createElement('div');
+  coin.className = 'coin-spin'; coin.textContent = '\ud83e\ude99'; coin.style.left = r.left + r.width / 2 - 16 + 'px'; coin.style.top = r.top + 'px'; document.body.appendChild(coin); setTimeout(function () { coin.remove(); }, 800);
+}
+
+// === END + LEADERBOARD ===
+function endGame() {
+  clearInterval(timerInterval); stopBGM();
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'block';
+  var endTitles = { hell: '\ud83d\udc80 Challenge Over!', mario: '\ud83c\udf44 Challenge Over!', normal: '\ud83c\udf89 Challenge Over!' };
+  document.getElementById('endTitle').textContent = endTitles[gameMode];
+  document.getElementById('finalScore').textContent = score; playGameOver();
+  var rt = '';
+  if (gameMode === 'hell') rt = score >= 300 ? '\ud83d\udc51 Hell King!' : (score >= 150 ? '\ud83d\udd25 Survived!' : (score >= 0 ? '\ud83d\udcaa Barely...' : '\ud83d\udc80 Consumed'));
+  else if (gameMode === 'mario') rt = score >= 120 ? '\u2b50 Super Quickdraw!' : (score >= 80 ? '\ud83c\udf44 Powered Up!' : (score >= 0 ? '\ud83c\udf1f Not bad' : '\ud83d\udc22 Tripped'));
+  else rt = score >= 200 ? '\ud83c\udfc6 Word Master!' : (score >= 100 ? '\ud83d\udc4d Nice!' : (score >= 0 ? '\ud83d\udcaa Keep going' : '\ud83d\udcda Study more'));
+  document.getElementById('resultText').textContent = rt;
+  var name = playerData.name.trim();
+  var listKey = getListKey();
+  if (name) { addToLB(gameMode, listKey, { name: name, score: score, avatar: playerData.avatar, date: new Date().toISOString().slice(0, 10) }); }
+  renderLeaderboard();
+  document.getElementById('wordList').innerHTML = words.map(function (w, i) {
+    var r = gameResults.find(function (g) { return g.word === w.word; });
+    return '<div class="word-item"><span>' + (i + 1) + '. ' + w.word + ' <small>(' + w.meaning + ')</small></span>' + (r ? '<span class="correct">\u2713</span>' : '<span class="wrong">\u2717</span>') + '</div>';
+  }).join('');
+}
+
+function renderLeaderboard() {
+  var lb = loadLB(gameMode, getListKey()), c = document.getElementById('lbContent');
+  var modeNames = { hell: 'Hell', mario: 'Quickdraw', normal: 'Normal' };
+  document.getElementById('lbTitle').textContent = '\ud83c\udfc6 Leaderboard \u00b7 ' + modeNames[gameMode] + ' Mode';
+  if (lb.length === 0) { c.innerHTML = '<div class="lb-empty">No scores yet<br>Finish a game to be the first!</div>'; return; }
+  var myName = playerData.name.trim();
+  c.innerHTML = '<table class="lb-table"><thead><tr><th>#</th><th>Player</th><th>Score</th><th>Date</th></tr></thead><tbody>' + lb.map(function (e, i) { return '<tr' + (myName && e.name === myName ? ' class="lb-my-row"' : '') + '><td class="lb-rank">' + (i + 1) + '</td><td><span class="lb-avatar" id="lbav_' + i + '"></span><span class="lb-player">' + e.name + '</span></td><td class="lb-score">' + e.score + '</td><td style="font-size:11px">' + e.date + '</td></tr>'; }).join('') + '</tbody></table>';
+  lb.forEach(function (e, i) { var av = ALL_AVATARS[e.avatar] || ALL_AVATARS[0]; renderPixelAvatar(document.getElementById('lbav_' + i), av, 28); });
+}
+
+function restartGame() { startGame(); }
+
+// === EVENTS ===
+document.addEventListener('keydown', function (e) {
+  if (document.getElementById('gameScreen').style.display === 'none') return;
+  if (/^[A-Za-z]$/.test(e.key)) { e.preventDefault(); handleInput(e.key.toUpperCase()); }
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' && document.getElementById('playerScreen').style.display !== 'none') startGame();
+});
+
+// === INIT ===
+generateKeyboard();
+showVocabScreen();
 </script>
 </body>
+</html></body>
 </html>
