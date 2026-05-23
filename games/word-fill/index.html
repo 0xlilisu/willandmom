@@ -156,13 +156,13 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <div class="flame-particles" id="flameParticles"></div>
 <div class="game-container">
 <!-- 词汇表+模式选择 -->
-<div id="vocabScreen"><h1>🎮 填字母挑战</h1><p class="subtitle">勾选要练习的章节（可多选）</p>
+<div id="vocabScreen"><h1>🎮 填字母挑战</h1><p class="subtitle" id="vocabSubtitle">勾选章节，点击难度卡片开始</p>
 <div class="list-toolbar"><button class="btn btn-sm active-btn" onclick="selectAllLists()">全选</button><button class="btn btn-sm" onclick="deselectAllLists()">取消</button><button class="btn btn-sm" onclick="invertSelection()">反选</button></div>
 <div class="list-grid" id="listGrid"></div>
 <div class="list-summary" id="listSummary"></div>
-<div style="text-align:center;margin:10px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:10px">选择难度模式：</p>
+<div style="text-align:center;margin:15px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:10px">点击卡片选择模式开始 →</p>
 <div class="mode-cards"><div class="mode-card normal-card" onclick="selectModeCard('normal',this)"><div class="mode-icon">📖</div><div class="mode-name">普通模式</div><div class="mode-desc">120秒  +10/-5</div></div><div class="mode-card hell-card" onclick="selectModeCard('hell',this)"><div class="mode-icon">🔥</div><div class="mode-name">地狱模式</div><div class="mode-desc">90秒  +20/-15</div></div><div class="mode-card mario-card" onclick="selectModeCard('mario',this)"><div class="mode-icon">🍄</div><div class="mode-name">快枪手</div><div class="mode-desc">60秒  +15/-10</div></div></div></div>
-<button class="btn" onclick="goToPlayerSetup()">下一步 →</button></div>
+<div style="text-align:center;margin-top:8px"><span class="skip-link" onclick="goToPlayerSetup()">👤 修改头像和昵称</span></div></div>
 
 <!-- 玩家设置 -->
 <div id="playerScreen" style="display:none"><h1>👤 你的身份</h1><p class="subtitle">选头像和昵称（可以跳过）</p>
@@ -172,7 +172,7 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <p style="text-align:center;font-size:13px;color:var(--sub);margin:12px 0">你的昵称（可选）</p>
 <div style="text-align:center"><input type="text" class="name-input" id="playerName" placeholder="输入你的名字..." maxlength="12"></div>
 <div class="name-hint">留空则不参与排行榜</div>
-<div style="text-align:center;margin-top:15px"><button class="btn" onclick="startGame()">🎮 开始游戏</button><br><span class="skip-link" onclick="startGame()">跳过设置，直接开始</span></div></div>
+<div style="text-align:center;margin-top:15px"><button class="btn" onclick="startGame()">🎮 开始游戏</button><br><span class="skip-link" onclick="showVocabScreen()">← 返回选择</span></div></div>
 
 <!-- 游戏界面 -->
 <div id="gameScreen" style="display:none"><h1 id="gameTitle">填字母挑战</h1>
@@ -242,7 +242,7 @@ function updateSummary(){
   document.getElementById('listSummary').innerHTML=`已选 <strong>${selectedListIds.size}</strong> 个章节，共 <strong>${total}</strong> 个单词`;
   document.querySelector('#vocabScreen .btn').disabled=total===0;
 }
-function selectModeCard(mode,el){gameMode=mode;document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function selectModeCard(mode,el){gameMode=mode;document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');startGame();}
 function goToPlayerSetup(){document.getElementById('vocabScreen').style.display='none';document.getElementById('playerScreen').style.display='block';document.getElementById('playerName').value=playerData.name||'';renderAvatarGrid();updatePreview();}
 function updatePreview(){const av=ALL_AVATARS[playerData.avatar];renderPixelAvatar(document.getElementById('previewAvatar'),av,60);}
 function renderAvatarGrid(){const grid=document.getElementById('avatarGrid');grid.innerHTML='';ALL_AVATARS.forEach((av,i)=>{const cell=document.createElement('div');cell.className='avatar-cell'+(i===playerData.avatar?' selected':'');cell.onclick=()=>{playerData.avatar=i;renderAvatarGrid();updatePreview();};renderPixelAvatar(cell,av,28);grid.appendChild(cell);});}
