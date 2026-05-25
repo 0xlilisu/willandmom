@@ -203,6 +203,185 @@ const WORD_LISTS = (() => {
   const lists = [];
   for (let i = 1; i <= 30; i++) {
     const w = [];
+    if (i === 2) w.push(
+      { word: 'TEXT', meaning: '\u6587\u672c' },
+      { word: 'MEND', meaning: '\u4fee\u7406' },
+      { word: 'SILK', meaning: '\u4e1d\u7ef8' },
+      { word: 'DAMP', meaning: '\u6f6e\u6e7f' },
+      { word: 'MELT', meaning: '\u7194\u5316' },
+      { word: 'BUMP', meaning: '\u78b0\u649e' },
+      { word: 'FACT', meaning: '\u4e8b\u5b9e' },
+      { word: 'LOFT', meaning: '\u9601\u697c' },
+      { word: 'RISK', meaning: '\u98ce\u9669' },
+      { word: 'WINK', meaning: '\u7728\u773c' }
+    );
+    if (i === 3) w.push(
+      { word: 'SWIFT', meaning: '\u8fc5\u901f\u7684' },
+      { word: 'STAND', meaning: '\u7ad9\u7acb' },
+      { word: 'BLUNT', meaning: '\u9492\u7684' },
+      { word: 'DRIFT', meaning: '\u6f02\u6d41' },
+      { word: 'CRISP', meaning: '\u8106\u7684' },
+      { word: 'GRUNT', meaning: '\u5495\u5495\u58f0' },
+      { word: 'CREPT', meaning: '\u722c\u884c' },
+      { word: 'SLEPT', meaning: '\u7761\u89c9' },
+      { word: 'PRINT', meaning: '\u6253\u5370' },
+      { word: 'SPLIT', meaning: '\u62c6\u5206' }
+    );
+    if (i === 4) w.push(
+      { word: 'CUFF', meaning: '\u8896\u53e3' },
+      { word: 'CLIFF', meaning: '\u60ac\u5d16' },
+      { word: 'SNIFF', meaning: '\u55c5' },
+      { word: 'PUFF', meaning: '\u5439\u6c14' },
+      { word: 'MISS', meaning: '\u9519\u8fc7' },
+      { word: 'STILL', meaning: '\u4ecd\u7136' },
+      { word: 'PRESS', meaning: '\u6309\u538b' },
+      { word: 'BUZZ', meaning: '\u55e1\u55e1\u58f0' },
+      { word: 'FRIZZ', meaning: '\u5377\u66f2' }
+    );
+    if (i === 5) w.push(
+      { word: 'CAME', meaning: '\u6765' },
+      { word: 'FLAME', meaning: '\u706b\u7130' },
+      { word: 'SPADE', meaning: '\u9525\u5b50' },
+      { word: 'PALE', meaning: '\u82cd\u767d\u7684' },
+      { word: 'STEVE', meaning: '\u53f2\u8482\u592b' },
+      { word: 'WHILE', meaning: '\u5f53...\u65f6' },
+      { word: 'INSIDE', meaning: '\u5728\u5185\u90e8' },
+      { word: 'FROZE', meaning: '\u51bb\u7ed3' },
+      { word: 'THOSE', meaning: '\u90a3\u4e9b' },
+      { word: 'TUNE', meaning: '\u65cb\u5f8b' }
+    );
+    if (i === 6) w.push(
+      { word: 'CAPE', meaning: '\u62ab\u80a9' },
+      { word: 'CONE', meaning: '\u5706\u9525' },
+      { word: 'KISS', meaning: '\u4eb2\u543b' },
+      { word: 'KIND', meaning: '\u5584\u826f' },
+      { word: 'KEEP', meaning: '\u4fdd\u6301' },
+      { word: 'CUB', meaning: '\u5e7c\u517d' },
+      { word: 'KEN', meaning: '\u80af' },
+      { word: 'COT', meaning: '\u5c0f\u5e8a' },
+      { word: 'CUT', meaning: '\u5207\u5272' },
+      { word: 'KING', meaning: '\u56fd\u738b' }
+    );
+    if (i === 7) w.push(
+      { word: 'WAIT', meaning: '\u7b49\u5f85' },
+      { word: 'NAIL', meaning: '\u6307\u7532' },
+      { word: 'EXPLAIN', meaning: '\u89e3\u91ca' },
+      { word: 'GRAIN', meaning: '\u7c73\u7c92' },
+      { word: 'PLAIN', meaning: '\u5e73\u539f' },
+      { word: 'AGAIN', meaning: '\u518d\u4e00\u6b21' },
+      { word: 'STAIN', meaning: '\u6c61\u70b9' },
+      { word: 'PAIN', meaning: '\u75bc\u75db' },
+      { word: 'DRAIN', meaning: '\u6392\u6c34' },
+      { word: 'RAIN', meaning: '\u96e8' }
+    );
+    if (i === 8) w.push(
+      { word: 'FACT', meaning: '\u4e8b\u5b9e' },
+      { word: 'FAMILY', meaning: '\u5bb6\u5ead' },
+      { word: 'LEAF', meaning: '\u53f6\u5b50' },
+      { word: 'PHONE', meaning: '\u7535\u8bdd' },
+      { word: 'PHOTO', meaning: '\u7167\u7247' },
+      { word: 'GRAPH', meaning: '\u56fe\u8868' },
+      { word: 'DOLPHIN', meaning: '\u6d77\u8c5a' },
+      { word: 'FUNNY', meaning: '\u6709\u8da3\u7684' },
+      { word: 'HALF', meaning: '\u4e00\u534a' },
+      { word: 'TROPHY', meaning: '\u5956\u676f' }
+    );
+    if (i === 9) w.push(
+      { word: 'FOUND', meaning: '\u53d1\u73b0' },
+      { word: 'ROUND', meaning: '\u5706\u7684' },
+      { word: 'CLOUD', meaning: '\u4e91' },
+      { word: 'HOUSE', meaning: '\u623f\u5b50' },
+      { word: 'LOUD', meaning: '\u5927\u58f0\u7684' },
+      { word: 'HOW', meaning: '\u5982\u4f55' },
+      { word: 'NOW', meaning: '\u73b0\u5728' },
+      { word: 'BROWN', meaning: '\u68d5\u8272' },
+      { word: 'CROWN', meaning: '\u7687\u51a0' },
+      { word: 'CROWD', meaning: '\u4eba\u7fa4' }
+    );
+    if (i === 10) w.push(
+      { word: 'CLICKED', meaning: '\u70b9\u51fb' },
+      { word: 'SNIFFED', meaning: '\u55c5\u4e86' },
+      { word: 'LOCKED', meaning: '\u9501\u4e86' },
+      { word: 'SHAVED', meaning: '\u5241\u4e86' },
+      { word: 'BANGED', meaning: '\u7838\u4e86' },
+      { word: 'STAYED', meaning: '\u505c\u7559' },
+      { word: 'PLANNED', meaning: '\u8ba1\u5212' },
+      { word: 'CHATTED', meaning: '\u804a\u5929' },
+      { word: 'NODDED', meaning: '\u70b9\u5934' },
+      { word: 'SHOUTED', meaning: '\u5927\u558a' }
+    );
+    if (i === 11) w.push(
+      { word: 'I\'M', meaning: '\u6211\u662f' },
+      { word: 'WASN\'T', meaning: '\u4e0d\u662f' },
+      { word: 'IT\'S', meaning: '\u5b83\u662f' },
+      { word: 'HAVEN\'T', meaning: '\u6ca1\u6709' },
+      { word: 'DON\'T', meaning: '\u4e0d\u8981' },
+      { word: 'CAN\'T', meaning: '\u4e0d\u80fd' },
+      { word: 'ISN\'T', meaning: '\u4e0d\u662f' },
+      { word: 'DIDN\'T', meaning: '\u6ca1\u505a' },
+      { word: 'HASN\'T', meaning: '\u6ca1\u6709' },
+      { word: 'SHOULDN\'T', meaning: '\u4e0d\u5e94\u8be5' }
+    );
+    if (i === 12) w.push(
+      { word: 'INTO', meaning: '\u8fdb\u5165' },
+      { word: 'ONTO', meaning: '\u5230...\u4e0a' },
+      { word: 'INSIDE', meaning: '\u5185\u90e8' },
+      { word: 'BLACKBIRD', meaning: '\u9e26\u9e26' },
+      { word: 'STARFISH', meaning: '\u6d77\u661f' },
+      { word: 'OUTSIDE', meaning: '\u5916\u9762' },
+      { word: 'TOOTHBRUSH', meaning: '\u7259\u5237' },
+      { word: 'POPCORN', meaning: '\u7206\u7c73\u82b1' },
+      { word: 'BACKPACK', meaning: '\u80cc\u5305' },
+      { word: 'CUPCAKE', meaning: '\u7eb8\u676f\u86cb\u7cd5' }
+    );
+    if (i === 13) w.push(
+      { word: 'MERRY CHRISTMAS', meaning: '\u5723\u8bde\u5feb\u4e50' },
+      { word: 'PRESENT', meaning: '\u793c\u7269' },
+      { word: 'REINDEER', meaning: '\u9a6d\u9e7f' },
+      { word: 'SLEIGH', meaning: '\u96ea\u6a47' },
+      { word: 'ELF', meaning: '\u5c0f\u7cbe\u7075' },
+      { word: 'ELVES', meaning: '\u5c0f\u7cbe\u7075\u4eec' },
+      { word: 'UNWRAP', meaning: '\u6253\u5f00' },
+      { word: 'WRAPPING', meaning: '\u5305\u88c5' },
+      { word: 'JINGLE', meaning: '\u53ee\u5f53\u58f0' },
+      { word: 'GINGERBREAD', meaning: '\u59dc\u997c' }
+    );
+    if (i === 14) w.push(
+      { word: 'GARDEN', meaning: '\u82b1\u56ed' },
+      { word: 'FARM', meaning: '\u519c\u573a' },
+      { word: 'PARK', meaning: '\u516c\u56ed' },
+      { word: 'ARTIST', meaning: '\u827a\u672f\u5bb6' },
+      { word: 'CARPET', meaning: '\u5730\u6bef' },
+      { word: 'STORM', meaning: '\u98ce\u66b4' },
+      { word: 'MORNING', meaning: '\u65e9\u4e0a' },
+      { word: 'REPORT', meaning: '\u62a5\u544a' },
+      { word: 'HORSE', meaning: '\u9a6c' },
+      { word: 'NORTH', meaning: '\u5317\u65b9' }
+    );
+    if (i === 15) w.push(
+      { word: 'CRY', meaning: '\u54ed' },
+      { word: 'FLY', meaning: '\u98de' },
+      { word: 'SHY', meaning: '\u5bb3\u7f9e' },
+      { word: 'SPY', meaning: '\u95f4\u8c0d' },
+      { word: 'SLY', meaning: '\u72e1\u733e' },
+      { word: 'NOBODY', meaning: '\u6ca1\u4eba' },
+      { word: 'PUPPY', meaning: '\u5c0f\u72d7' },
+      { word: 'CHEEKY', meaning: '\u80e1\u95f9\u7684' },
+      { word: 'FAMILY', meaning: '\u5bb6\u5ead' },
+      { word: 'EMPTY', meaning: '\u7a7a\u7684' }
+    );
+    if (i === 16) w.push(
+      { word: 'CLEAN', meaning: '\u5e72\u51c0' },
+      { word: 'REACHED', meaning: '\u5230\u8fbe' },
+      { word: 'HEATER', meaning: '\u6696\u6c14' },
+      { word: 'LEAPFROG', meaning: '\u8df3\u8df4\u6e38\u620f' },
+      { word: 'PEACH', meaning: '\u6843\u5b50' },
+      { word: 'SHEET', meaning: '\u5e8a\u5355' },
+      { word: 'WEEKEND', meaning: '\u5468\u672b' },
+      { word: 'THREE', meaning: '\u4e09' },
+      { word: 'WHEEL', meaning: '\u8f66\u8f6e' },
+      { word: 'BETWEEN', meaning: '\u5728\u4e4b\u95f4' }
+    );
     if (i === 17) w.push(
       { word: 'TOAST', meaning: '\u5410\u53f8' },
       { word: 'SOAKING', meaning: '\u6d78\u6ce1' },
@@ -214,6 +393,114 @@ const WORD_LISTS = (() => {
       { word: 'YELLOW', meaning: '\u9ec4\u8272' },
       { word: 'WINDOW', meaning: '\u7a97\u6237' },
       { word: 'PILLOW', meaning: '\u6795\u5934' }
+    );
+    if (i === 18) w.push(
+      { word: 'BALL', meaning: '\u7403' },
+      { word: 'BOWL', meaning: '\u7897' },
+      { word: 'GREAT', meaning: '\u4f1f\u5927' },
+      { word: 'GRATE', meaning: '\u7089\u680f' },
+      { word: 'GROAN', meaning: '\u547c\u5431' },
+      { word: 'GROWN', meaning: '\u6210\u957f' },
+      { word: 'HEEL', meaning: '\u811a\u8ddf' },
+      { word: 'HEAL', meaning: '\u6cbb\u6108' },
+      { word: 'HEAR', meaning: '\u542c\u5230' },
+      { word: 'HERE', meaning: '\u8fd9\u91cc' }
+    );
+    if (i === 19) w.push(
+      { word: 'ARRIVE', meaning: '\u5230\u8fbe' },
+      { word: 'BUILD', meaning: '\u5efa\u9020' },
+      { word: 'BUSY', meaning: '\u5fd9\u788c' },
+      { word: 'BUSINESS', meaning: '\u5546\u52a1' },
+      { word: 'CAUGHT', meaning: '\u6293\u4f4f' },
+      { word: 'CIRCLE', meaning: '\u5706' },
+      { word: 'CERTAIN', meaning: '\u786e\u5b9a' },
+      { word: 'DECIDE', meaning: '\u51b3\u5b9a' },
+      { word: 'DIFFERENT', meaning: '\u4e0d\u540c' },
+      { word: 'DISAPPEAR', meaning: '\u6d88\u5931' }
+    );
+    if (i === 20) w.push(
+      { word: 'DIFFICULT', meaning: '\u56f0\u96be' },
+      { word: 'EARLY', meaning: '\u65e9\u65e9' },
+      { word: 'EARTH', meaning: '\u5730\u7403' },
+      { word: 'EXERCISE', meaning: '\u953b\u70bc' },
+      { word: 'FAMOUS', meaning: '\u8457\u540d' },
+      { word: 'FEBRUARY', meaning: '\u4e8c\u6708' },
+      { word: 'FRUIT', meaning: '\u6c34\u679c' },
+      { word: 'GROUP', meaning: '\u7ec4' },
+      { word: 'GUIDE', meaning: '\u5411\u5bfc' },
+      { word: 'HEART', meaning: '\u5fc3\u810f' }
+    );
+    if (i === 21) w.push(
+      { word: 'SEEN', meaning: '\u770b\u89c1' },
+      { word: 'SCENE', meaning: '\u573a\u666f' },
+      { word: 'NOT', meaning: '\u4e0d' },
+      { word: 'KNOT', meaning: '\u7ed3' },
+      { word: 'MAIN', meaning: '\u4e3b\u8981' },
+      { word: 'MANE', meaning: '\u9b03\u6bdb' },
+      { word: 'MAIL', meaning: '\u90ae\u4ef6' },
+      { word: 'MALE', meaning: '\u7537\u6027' },
+      { word: 'MEAT', meaning: '\u8089' },
+      { word: 'MEET', meaning: '\u89c1\u9762' }
+    );
+    if (i === 22) w.push(
+      { word: 'MEASURE', meaning: '\u6d4b\u91cf' },
+      { word: 'TREASURE', meaning: '\u8d22\u5b9d' },
+      { word: 'PLEASURE', meaning: '\u5feb\u4e50' },
+      { word: 'ENCLOSURE', meaning: '\u56f4\u680f' },
+      { word: 'LEISURE', meaning: '\u95f2\u6687' },
+      { word: 'COMPOSURE', meaning: '\u9547\u9759' },
+      { word: 'PRESSURE', meaning: '\u538b\u529b' },
+      { word: 'CLOSURE', meaning: '\u7ed3\u675f' },
+      { word: 'DISCLOSURE', meaning: '\u62ab\u9732' },
+      { word: 'ASSURE', meaning: '\u4fdd\u8bc1' }
+    );
+    if (i === 23) w.push(
+      { word: 'ROCK', meaning: '\u5ca9\u77f3' },
+      { word: 'STONE', meaning: '\u77f3\u5934' },
+      { word: 'EARTH', meaning: '\u5730\u7403' },
+      { word: 'GROUND', meaning: '\u5730\u9762' },
+      { word: 'SHAKE', meaning: '\u6447\u6643' },
+      { word: 'CRACK', meaning: '\u88c2\u7f1d' },
+      { word: 'LAVA', meaning: '\u7194\u5ca9' },
+      { word: 'ASH', meaning: '\u7070\u70ec' },
+      { word: 'HEAT', meaning: '\u70ed' },
+      { word: 'DUST', meaning: '\u5c18\u571f' }
+    );
+    if (i === 24) w.push(
+      { word: 'ACTION', meaning: '\u884c\u52a8' },
+      { word: 'INVENTION', meaning: '\u53d1\u660e' },
+      { word: 'INJECTION', meaning: '\u6ce8\u5c04' },
+      { word: 'HESITATION', meaning: '\u72b9\u8c6b' },
+      { word: 'COMPLETION', meaning: '\u5b8c\u6210' },
+      { word: 'SUBTRACTION', meaning: '\u51cf\u6cd5' },
+      { word: 'LOCATION', meaning: '\u4f4d\u7f6e' },
+      { word: 'CAUTION', meaning: '\u5c0f\u5fc3' },
+      { word: 'POTION', meaning: '\u9b54\u836f' },
+      { word: 'QUESTION', meaning: '\u95ee\u9898' }
+    );
+    if (i === 25) w.push(
+      { word: 'MISHEARD', meaning: '\u542c\u9519' },
+      { word: 'MISTREAT', meaning: '\u8650\u5f85' },
+      { word: 'MISUSE', meaning: '\u8bef\u7528' },
+      { word: 'MISLEAD', meaning: '\u8bef\u5bfc' },
+      { word: 'MISTAKE', meaning: '\u9519\u8bef' },
+      { word: 'MISINTERPRET', meaning: '\u8bef\u89e3' },
+      { word: 'MISMATCH', meaning: '\u4e0d\u5339\u914d' },
+      { word: 'MISBEHAVE', meaning: '\u4e0d\u89c4\u77e9' },
+      { word: 'MISFORTUNE', meaning: '\u4e0d\u5e78' },
+      { word: 'MISUNDERSTOOD', meaning: '\u88ab\u8bef\u89e3' }
+    );
+    if (i === 26) w.push(
+      { word: 'SCIENCE', meaning: '\u79d1\u5b66' },
+      { word: 'SCENE', meaning: '\u573a\u666f' },
+      { word: 'DISCIPLINE', meaning: '\u7eaa\u5f8b' },
+      { word: 'FASCINATE', meaning: '\u8ff7\u4f4f' },
+      { word: 'CRESCENT', meaning: '\u65b0\u6708' },
+      { word: 'MUSCLE', meaning: '\u808c\u8089' },
+      { word: 'SCISSORS', meaning: '\u526a\u5200' },
+      { word: 'SCENIC', meaning: '\u98ce\u666f\u7f8e\u7684' },
+      { word: 'OBSCENE', meaning: '\u4e0b\u6d41' },
+      { word: 'ASCEND', meaning: '\u4e0a\u5347' }
     );
     if (i === 27) w.push(
       { word: 'CHEMIST', meaning: '\u5316\u5b66\u5bb6' },
@@ -227,7 +514,14 @@ const WORD_LISTS = (() => {
       { word: 'TECHNOLOGY', meaning: '\u79d1\u6280' },
       { word: 'CHAOS', meaning: '\u6df7\u4e71' }
     );
-    const labels = { 17: 'oa/ow', 27: 'ch' };
+    const labels = {
+      2: 'short i', 3: 'final blends', 4: 'double ff', 5: 'a_e', 6: 'c/k',
+      7: 'ain/ai', 8: 'ph/f', 9: 'ou/ow', 10: '-ed', 11: 'contractions',
+      12: 'compound', 13: 'Xmas', 14: 'ar/or', 15: 'y endings', 16: 'ea',
+      17: 'oa/ow', 18: 'homophones', 19: 'tricky', 20: 'tricky 2',
+      21: 'homophones 2', 22: '-sure', 23: 'volcano', 24: '-tion',
+      25: 'mis-', 26: 'sci', 27: 'ch'
+    };
     lists.push({ id: 'list' + i, num: i, label: labels[i] || '', words: w });
   }
   return lists;
