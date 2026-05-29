@@ -96,6 +96,15 @@ body.hell .bpm-display{display:block}body.mario .bpm-display{display:block;color
 .pixel-cell{border-radius:1px}
 .name-input{width:100%;max-width:300px;padding:12px 16px;font-size:16px;border:3px solid var(--border);border-radius:12px;text-align:center;background:var(--container-bg);color:var(--text);outline:none;transition:border-color .3s}
 .name-input:focus{border-color:var(--stat-color)}
+/* 数量选择滑块 */
+.slider-container{margin:20px 0;padding:0 10px}
+.slider-container input[type=range]{width:100%;height:18px;-webkit-appearance:none;appearance:none;background:var(--progress-bg);border-radius:9px;outline:none}
+.slider-container input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:40px;height:40px;border-radius:50%;background:var(--stat-color);cursor:pointer;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .15s}
+.slider-container input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.slider-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--sub)}
+.slider-value{font-size:28px;font-weight:bold;color:var(--stat-color)}
+.slider-value-unit{font-size:14px;color:var(--sub)}
+.cp-hint{text-align:center;font-size:12px;color:var(--sub);margin-top:6px}
 .name-hint{text-align:center;font-size:12px;color:var(--sub);margin-top:6px}
 .skip-link{text-align:center;margin-top:10px;font-size:13px;color:var(--sub);cursor:pointer;text-decoration:underline}
 .skip-link:hover{color:var(--stat-color)}
@@ -163,6 +172,12 @@ body.mario .stats-bar{border:2px solid #fbd000;border-radius:4px}
 <div style="text-align:center;margin:15px 0"><p style="color:var(--sub);font-size:13px;margin-bottom:10px">点击卡片选择模式开始 →</p>
 <div class="mode-cards"><div class="mode-card normal-card" onclick="selectModeCard('normal',this)"><div class="mode-icon">📖</div><div class="mode-name">普通模式</div><div class="mode-desc">120秒  +10/-5</div></div><div class="mode-card hell-card" onclick="selectModeCard('hell',this)"><div class="mode-icon">🔥</div><div class="mode-name">地狱模式</div><div class="mode-desc">90秒  +20/-15</div></div><div class="mode-card mario-card" onclick="selectModeCard('mario',this)"><div class="mode-icon">🍄</div><div class="mode-name">快枪手</div><div class="mode-desc">60秒  +15/-10</div></div></div></div></div>
 
+<!-- 数量选择器 -->
+<div id="countPicker" style="display:none"><h1>📊 选多少单词？</h1><p class="subtitle" id="cpSubtitle">你选了 <strong id="cpTotal">0</strong> 个单词</p>
+<div class="slider-container"><input type="range" id="wordCountSlider" min="10" max="30" value="20" oninput="updateSliderValue()"><div class="slider-labels"><span>10</span><span class="slider-value" id="sliderValue">20</span><span id="sliderMax">30</span></div></div>
+<p class="cp-hint">从各章节均匀抽取，滑动选择数量</p>
+<div style="text-align:center;margin-top:15px"><button class="btn" onclick="confirmCount()">🎮 开始挑战</button><br><span class="skip-link" onclick="showVocabScreen()">← 返回选择</span></div></div>
+
 <!-- 玩家设置 -->
 <div id="playerScreen" style="display:none"><h1>👤 你的身份</h1><p class="subtitle">选头像和昵称（可以跳过）</p>
 <div style="text-align:center;margin:15px 0"><div id="previewAvatar" style="display:inline-block;width:64px;height:64px;border:3px solid var(--border);border-radius:12px;overflow:hidden"></div></div>
@@ -210,7 +225,6 @@ const WORD_LISTS = (() => {
       { word: 'DAMP', def: 'slightly wet', meaning: '\u6f6e\u6e7f' },
       { word: 'MELT', def: 'to turn from solid to liquid', meaning: '\u7194\u5316' },
       { word: 'BUMP', def: 'a small raised area', meaning: '\u78b0\u649e' },
-      { word: 'FACT', def: 'something that is true', meaning: '\u4e8b\u5b9e' },
       { word: 'LOFT', def: 'a room at the top of a building', meaning: '\u9601\u697c' },
       { word: 'RISK', def: 'the chance of danger or loss', meaning: '\u98ce\u9669' },
       { word: 'WINK', def: 'to close one eye briefly', meaning: '\u7728\u773c' }
@@ -245,7 +259,6 @@ const WORD_LISTS = (() => {
       { word: 'PALE', def: 'light in colour', meaning: '\u82cd\u767d\u7684' },
       { word: 'STEVE', def: 'a boy\'s name', meaning: '\u53f2\u8482\u592b' },
       { word: 'WHILE', def: 'during the time that', meaning: '\u5f53...\u65f6' },
-      { word: 'INSIDE', def: 'the inner part', meaning: '\u5728\u5185\u90e8' },
       { word: 'FROZE', def: 'became solid from cold', meaning: '\u51bb\u7ed3' },
       { word: 'THOSE', def: 'the ones over there', meaning: '\u90a3\u4e9b' },
       { word: 'TUNE', def: 'a melody or song', meaning: '\u65cb\u5f8b' }
@@ -367,7 +380,6 @@ const WORD_LISTS = (() => {
       { word: 'NOBODY', def: 'no person', meaning: '\u6ca1\u4eba' },
       { word: 'PUPPY', def: 'a young dog', meaning: '\u5c0f\u72d7' },
       { word: 'CHEEKY', def: 'being a little rude in a funny way', meaning: '\u80e1\u95f9\u7684' },
-      { word: 'FAMILY', def: 'a group of people who are related', meaning: '\u5bb6\u5ead' },
       { word: 'EMPTY', def: 'having nothing inside', meaning: '\u7a7a\u7684' }
     );
     if (i === 16) w.push(
@@ -400,7 +412,6 @@ const WORD_LISTS = (() => {
       { word: 'GREAT', def: 'very good or big', meaning: '\u4f1f\u5927' },
       { word: 'GRATE', def: 'a metal frame with bars', meaning: '\u7089\u680f' },
       { word: 'GROAN', def: 'a deep sad sound', meaning: '\u547c\u5431' },
-      { word: 'GROWN', def: 'become bigger or older', meaning: '\u6210\u957f' },
       { word: 'HEEL', def: 'the back part of a foot', meaning: '\u811a\u8ddf' },
       { word: 'HEAL', def: 'to become healthy again', meaning: '\u6cbb\u6108' },
       { word: 'HEAR', def: 'to listen with your ears', meaning: '\u542c\u5230' },
@@ -421,7 +432,6 @@ const WORD_LISTS = (() => {
     if (i === 20) w.push(
       { word: 'DIFFICULT', def: 'hard to do or understand', meaning: '\u56f0\u96be' },
       { word: 'EARLY', def: 'before the usual time', meaning: '\u65e9\u65e9' },
-      { word: 'EARTH', def: 'the planet we live on', meaning: '\u5730\u7403' },
       { word: 'EXERCISE', def: 'activity to stay fit', meaning: '\u953b\u70bc' },
       { word: 'FAMOUS', def: 'known by many people', meaning: '\u8457\u540d' },
       { word: 'FEBRUARY', def: 'the second month of the year', meaning: '\u4e8c\u6708' },
@@ -432,7 +442,6 @@ const WORD_LISTS = (() => {
     );
     if (i === 21) w.push(
       { word: 'SEEN', def: 'past form of see', meaning: '\u770b\u89c1' },
-      { word: 'SCENE', def: 'a place where something happens', meaning: '\u573a\u666f' },
       { word: 'NOT', def: 'used to say no', meaning: '\u4e0d' },
       { word: 'KNOT', def: 'a twisted tied piece of rope', meaning: '\u7ed3' },
       { word: 'MAIN', def: 'most important', meaning: '\u4e3b\u8981' },
@@ -684,7 +693,7 @@ function showVocabScreen() {
   stopBGM(); clearInterval(timerInterval);
   document.body.className = '';
   document.getElementById('flameParticles').innerHTML = '';
-  ['vocabScreen', 'playerScreen', 'gameScreen', 'endScreen'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['vocabScreen', 'playerScreen', 'gameScreen', 'endScreen', 'countPicker'].forEach(id => document.getElementById(id).style.display = 'none');
   document.getElementById('vocabScreen').style.display = 'block';
   renderListGrid();
   updateSummary();
@@ -711,10 +720,93 @@ function selectModeCard(mode, el) {
   gameMode = mode;
   document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  startGame();
+  var total = 0; selectedListIds.forEach(function(id) { var wl = WORD_LISTS.find(function(w) { return w.id === id; }); if (wl) total += wl.words.length; });
+  if (total > 30) {
+    showCountPicker(total);
+  } else {
+    startGame();
+  }
 }
 
-// === PLAYER SETUP ===
+// === COUNT PICKER ===
+function showCountPicker(total) {
+  ['vocabScreen','playerScreen','gameScreen','endScreen','countPicker'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+  document.getElementById('countPicker').style.display = 'block';
+  document.getElementById('cpTotal').textContent = total;
+  var slider = document.getElementById('wordCountSlider');
+  var val = Math.min(30, total);
+  slider.min = 10; slider.max = total; slider.value = val;
+  document.getElementById('sliderMax').textContent = total;
+  document.getElementById('sliderValue').textContent = val;
+}
+function updateSliderValue() {
+  document.getElementById('sliderValue').textContent = document.getElementById('wordCountSlider').value;
+}
+function confirmCount() {
+  var count = parseInt(document.getElementById('wordCountSlider').value);
+  startGame(count);
+}
+
+// Fisher-Yates shuffle
+function shuffleArray(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+// Evenly sample words from selected lists
+function sampleEvenly(wordCount) {
+  // Group words by their list
+  var listWords = []; // [{words: [...], total: 10}, ...]
+  var allWords = [];
+  var orderedListIds = Array.from(selectedListIds).sort();
+  orderedListIds.forEach(function(id) {
+    var wl = WORD_LISTS.find(function(w) { return w.id === id; });
+    if (wl && wl.words.length > 0) {
+      listWords.push({ words: wl.words.slice(), total: wl.words.length });
+      allWords = allWords.concat(wl.words);
+    }
+  });
+  
+  if (wordCount >= allWords.length) return allWords;
+  
+  // Distribute wordCount proportionally across lists, minimum 1 per list
+  var perList = listWords.map(function(lw) {
+    return Math.max(1, Math.round(wordCount * lw.total / allWords.length));
+  });
+  
+  // Adjust to match wordCount exactly
+  var sum = perList.reduce(function(a, b) { return a + b; }, 0);
+  while (sum !== wordCount) {
+    if (sum > wordCount) {
+      // Remove from largest
+      var maxIdx = 0;
+      for (var i = 1; i < perList.length; i++) { if (perList[i] > perList[maxIdx]) maxIdx = i; }
+      if (perList[maxIdx] > 1) { perList[maxIdx]--; sum--; }
+      else break;
+    } else {
+      // Add to smallest that can grow
+      var minIdx = 0;
+      for (var i = 1; i < perList.length; i++) { if (perList[i] < perList[minIdx]) minIdx = i; }
+      if (perList[minIdx] < listWords[minIdx].total) { perList[minIdx]++; sum++; }
+      else break;
+    }
+  }
+  
+  // Randomly pick from each list
+  var result = [];
+  listWords.forEach(function(lw, idx) {
+    var pool = lw.words.slice();
+    var n = Math.min(perList[idx], pool.length);
+    // Shuffle pool and take first n
+    pool = shuffleArray(pool);
+    for (var i = 0; i < n; i++) result.push(pool[i]);
+  });
+  
+  return result;
+}
 function goToPlayerSetup() {
   document.getElementById('vocabScreen').style.display = 'none';
   document.getElementById('playerScreen').style.display = 'block';
@@ -774,13 +866,27 @@ function createFlameParticles() { const c = document.getElementById('flamePartic
 function applyMode(mode) { gameMode = mode; document.body.className = ''; document.getElementById('flameParticles').innerHTML = ''; if (mode === 'hell') { document.body.classList.add('hell'); createFlameParticles(); } else if (mode === 'mario') document.body.classList.add('mario'); }
 
 // === GAME ENGINE ===
-function startGame() {
+function startGame(wordCount) {
   if (!gameMode) gameMode = 'normal';
   applyMode(gameMode);
   savePlayer(playerData);
-  words = []; selectedListIds.forEach(id => { const wl = WORD_LISTS.find(w => w.id === id); if (wl) words.push.apply(words, wl.words); });
-  if (words.length === 0) return;
-  ['vocabScreen', 'playerScreen', 'gameScreen', 'endScreen'].forEach(id => document.getElementById(id).style.display = 'none');
+  
+  // Build all words from selected lists
+  var allWords = [];
+  selectedListIds.forEach(function(id) { var wl = WORD_LISTS.find(function(w) { return w.id === id; }); if (wl) allWords = allWords.concat(wl.words); });
+  if (allWords.length === 0) return;
+  
+  // Sample if wordCount specified and less than total
+  if (wordCount && wordCount < allWords.length) {
+    words = sampleEvenly(wordCount);
+  } else {
+    words = allWords.slice();
+  }
+  // Shuffle for random order
+  words = shuffleArray(words);
+  
+  // Hide all screens, show game
+  ['vocabScreen','playerScreen','gameScreen','endScreen','countPicker'].forEach(function(id) { document.getElementById(id).style.display = 'none'; });
   document.getElementById('gameScreen').style.display = 'block';
   currentWordIndex = 0; score = 0; timeLeft = gameMode === 'hell' ? 90 : (gameMode === 'mario' ? 60 : 120); gameResults = [];
   var titles = { hell: '\ud83d\udd25 Hell Mode', mario: '\ud83c\udf44 Quick Draw', normal: '\ud83d\udcd6 Word Fill' };
